@@ -17,6 +17,7 @@ import { useAuthQuery } from "better-auth/client";
 import type { Session, User } from "better-auth/types";
 import { atom } from "nanostores";
 import type { passkey } from ".";
+import { PASSKEY_ERROR_CODES } from "./error-codes";
 import type { Passkey } from "./types";
 
 export const getPasskeyActions = (
@@ -69,12 +70,14 @@ export const getPasskeyActions = (
 			$store.notify("$sessionSignal");
 
 			return verified;
-		} catch {
+		} catch (err) {
+			// Error logs ran on the front-end
+			console.error(`[Better Auth] Error verifying passkey`, err);
 			return {
 				data: null,
 				error: {
 					code: "AUTH_CANCELLED",
-					message: "auth cancelled",
+					message: PASSKEY_ERROR_CODES.AUTH_CANCELLED.message,
 					status: 400,
 					statusText: "BAD_REQUEST",
 				},
@@ -155,7 +158,7 @@ export const getPasskeyActions = (
 						data: null,
 						error: {
 							code: e.code,
-							message: "previously registered",
+							message: PASSKEY_ERROR_CODES.PREVIOUSLY_REGISTERED.message,
 							status: 400,
 							statusText: "BAD_REQUEST",
 						},
@@ -166,7 +169,7 @@ export const getPasskeyActions = (
 						data: null,
 						error: {
 							code: e.code,
-							message: "registration cancelled",
+							message: PASSKEY_ERROR_CODES.REGISTRATION_CANCELLED.message,
 							status: 400,
 							statusText: "BAD_REQUEST",
 						},
@@ -186,7 +189,10 @@ export const getPasskeyActions = (
 				data: null,
 				error: {
 					code: "UNKNOWN_ERROR",
-					message: e instanceof Error ? e.message : "unknown error",
+					message:
+						e instanceof Error
+							? e.message
+							: PASSKEY_ERROR_CODES.UNKNOWN_ERROR.message,
 					status: 500,
 					statusText: "INTERNAL_SERVER_ERROR",
 				},
@@ -261,8 +267,10 @@ export const passkeyClient = () => {
 				signal: "$sessionSignal",
 			},
 		],
+		$ERROR_CODES: PASSKEY_ERROR_CODES,
 	} satisfies BetterAuthClientPlugin;
 };
 
 export type * from "@simplewebauthn/server";
+export * from "./error-codes";
 export type * from "./types";
