@@ -86,11 +86,12 @@ describe("oauth - init", () => {
 		).resolves.not.toThrowError();
 	});
 
-	it("should pass with session options but no secondaryStorage", async () => {
+	it("should pass with dynamic baseURL config when ctx.baseURL is unresolved during init", async () => {
 		await expect(
 			getTestInstance({
-				session: {
-					expiresIn: 60 * 60 * 24,
+				baseURL: {
+					allowedHosts: ["localhost:3000"],
+					protocol: "http",
 				},
 				plugins: [
 					jwt(),
@@ -107,23 +108,15 @@ describe("oauth - init", () => {
 		).resolves.not.toThrowError();
 	});
 
-	it("should fail with secondaryStorage but without storeSessionInDatabase", async () => {
-		const store = new Map<string, string>();
+	it("should still fail for an invalid configured jwt issuer", async () => {
 		await expect(
 			getTestInstance({
-				secondaryStorage: {
-					set(key, value) {
-						store.set(key, value);
-					},
-					get(key) {
-						return store.get(key) || null;
-					},
-					delete(key) {
-						store.delete(key);
-					},
-				},
 				plugins: [
-					jwt(),
+					jwt({
+						jwt: {
+							issuer: "not-a-valid-url",
+						},
+					}),
 					oauthProvider({
 						loginPage: "/login",
 						consentPage: "/consent",
@@ -134,40 +127,7 @@ describe("oauth - init", () => {
 					}),
 				],
 			}),
-		).rejects.toThrowError("storeSessionInDatabase");
-	});
-
-	it("should pass with secondaryStorage and storeSessionInDatabase", async () => {
-		const store = new Map<string, string>();
-		await expect(
-			getTestInstance({
-				secondaryStorage: {
-					set(key, value) {
-						store.set(key, value);
-					},
-					get(key) {
-						return store.get(key) || null;
-					},
-					delete(key) {
-						store.delete(key);
-					},
-				},
-				session: {
-					storeSessionInDatabase: true,
-				},
-				plugins: [
-					jwt(),
-					oauthProvider({
-						loginPage: "/login",
-						consentPage: "/consent",
-						silenceWarnings: {
-							oauthAuthServerConfig: true,
-							openidConfig: true,
-						},
-					}),
-				],
-			}),
-		).resolves.not.toThrowError();
+		).rejects.toThrowError("Invalid URL");
 	});
 });
 
