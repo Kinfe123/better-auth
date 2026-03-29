@@ -19,10 +19,21 @@ import {
  */
 
 const CUSTOM_SCHEMA = "auth";
+const PG_CONNECTION_STRING =
+	process.env.BA_KYSELY_CUSTOM_POSTGRES_URL ??
+	"postgres://user:password@localhost:5435/better_auth";
+
+const withSearchPath = (connectionString: string, schema: string) => {
+	const url = new URL(connectionString);
+	if (!url.searchParams.has("options")) {
+		url.searchParams.set("options", `-c search_path=${schema}`);
+	}
+	return url.toString();
+};
 
 // Connection string with custom schema in search_path
 const pgDB = new Pool({
-	connectionString: `postgres://user:password@localhost:5435/better_auth?options=-c search_path=${CUSTOM_SCHEMA}`,
+	connectionString: withSearchPath(PG_CONNECTION_STRING, CUSTOM_SCHEMA),
 });
 
 const kyselyDB = new Kysely({

@@ -14,8 +14,12 @@ import {
 } from "../adapter-factory";
 import { generateDrizzleSchema, resetGenerationCount } from "./generate-schema";
 
+const PG_CONNECTION_STRING =
+	process.env.BA_DRIZZLE_POSTGRES_URL ??
+	"postgres://user:password@localhost:5432/better_auth";
+
 const pgDB = new Pool({
-	connectionString: "postgres://user:password@localhost:5432/better_auth",
+	connectionString: PG_CONNECTION_STRING,
 });
 
 const cleanupDatabase = async (shouldDestroy = false) => {
@@ -43,7 +47,7 @@ const { execute } = await testAdapter({
 			"pg",
 		);
 
-		const command = `npx drizzle-kit push --dialect=postgresql --schema=${fileName}.ts --url=postgres://user:password@localhost:5432/better_auth`;
+		const command = `npx drizzle-kit push --dialect=postgresql --schema=${fileName}.ts --url=${PG_CONNECTION_STRING}`;
 		console.log(`Running: ${command}`);
 		console.log(`Options:`, betterAuthOptions);
 		try {

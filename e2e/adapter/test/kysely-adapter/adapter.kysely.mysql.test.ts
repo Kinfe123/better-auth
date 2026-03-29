@@ -14,8 +14,12 @@ import {
 	uuidTestSuite,
 } from "../adapter-factory";
 
+const MYSQL_CONNECTION_URI =
+	process.env.BA_KYSELY_MYSQL_URL ??
+	"mysql://user:password@localhost:3307/better_auth";
+
 const mysqlDB = createPool({
-	uri: "mysql://user:password@localhost:3307/better_auth",
+	uri: MYSQL_CONNECTION_URI,
 	timezone: "Z",
 });
 

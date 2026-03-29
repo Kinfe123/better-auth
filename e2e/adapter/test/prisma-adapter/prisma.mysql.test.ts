@@ -30,11 +30,11 @@ const { execute } = await testAdapter({
 	},
 	runMigrations: async (options: BetterAuthOptions) => {
 		const db = await getPrismaClient(dialect);
-		const migrationCount = incrementMigrationCount();
+		const migrationCount = incrementMigrationCount(dialect);
 		await generateAuthConfigFile(options);
 		await generatePrismaSchema(options, db, migrationCount, dialect);
-		await pushPrismaSchema(dialect);
-		destroyPrismaClient({ migrationCount: migrationCount - 1, dialect });
+		await destroyPrismaClient({ migrationCount: migrationCount - 1, dialect });
+		await pushPrismaSchema(dialect, options);
 	},
 	tests: [
 		normalTestSuite(),

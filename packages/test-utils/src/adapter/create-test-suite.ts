@@ -253,91 +253,103 @@ export const createTestSuite = <
 		}) => {
 			const createdRows: Record<string, any[]> = {};
 
-			let adapter = await helpers.adapter();
-			const wrapperAdapter = (
-				overrideOptions?: BetterAuthOptions | undefined,
-			) => {
-				const options = deepmerge(
+				let adapter = await helpers.adapter();
+				const wrapperAdapter = (
+					overrideOptions?: BetterAuthOptions | undefined,
+				) => {
+					const options = deepmerge(
 					deepmerge(
 						helpers.getBetterAuthOptions(),
 						config?.defaultBetterAuthOptions || {},
 					),
 					overrideOptions || {},
 				);
-				const adapterConfig = {
-					adapterId: helpers.adapterDisplayName,
-					...(adapter.options?.adapterConfig || {}),
-					adapterName: `Wrapped ${adapter.options?.adapterConfig.adapterName}`,
-					disableTransformOutput: true,
-					disableTransformInput: true,
-					disableTransformJoin: true,
-				};
-				const adapterCreator = (
-					options: BetterAuthOptions,
-				): DBAdapter<BetterAuthOptions> =>
-					createAdapterFactory({
-						config: {
-							...adapterConfig,
-							transaction: adapter.transaction,
-						},
-						adapter: ({ getDefaultModelName }) => {
-							adapter.transaction = undefined as any;
-							return {
-								count: async (args: any) => {
-									adapter = await helpers.adapter();
-									const res = await adapter.count(args);
-									return res as any;
-								},
-								deleteMany: async (args: any) => {
-									adapter = await helpers.adapter();
-									const res = await adapter.deleteMany(args);
-									return res as any;
-								},
-								delete: async (args: any) => {
-									adapter = await helpers.adapter();
-									const res = await adapter.delete(args);
-									return res as any;
-								},
-								findOne: async (args) => {
-									adapter = await helpers.adapter();
-									const res = await adapter.findOne(args);
-									return res as any;
-								},
-								findMany: async (args) => {
-									adapter = await helpers.adapter();
-									const res = await adapter.findMany(args);
-									return res as any;
-								},
-								update: async (args: any) => {
-									adapter = await helpers.adapter();
-									const res = await adapter.update(args);
-									return res as any;
-								},
-								updateMany: async (args) => {
-									adapter = await helpers.adapter();
-									const res = await adapter.updateMany(args);
-									return res as any;
-								},
-								createSchema: adapter.createSchema as any,
-								async create({ data, model, select }) {
-									const defaultModelName = getDefaultModelName(model);
-									adapter = await helpers.adapter();
-									const res = await adapter.create({
-										data: data,
-										model: defaultModelName,
-										select,
-										forceAllowId: true,
-									});
-									createdRows[model] = [...(createdRows[model] || []), res];
-									return res as any;
-								},
-								options: adapter.options,
-							};
-						},
-					})(options);
+					const adapterConfig = {
+						adapterId: helpers.adapterDisplayName,
+						...(adapter.options?.adapterConfig || {}),
+						adapterName: `Wrapped ${adapter.options?.adapterConfig.adapterName}`,
+						disableTransformOutput: true,
+						disableTransformInput: true,
+						disableTransformJoin: true,
+					};
+					const createDelegatingAdapter = (
+						getBaseAdapter: () => Promise<DBAdapter<BetterAuthOptions>>,
+					): DBAdapter<BetterAuthOptions> =>
+						createAdapterFactory({
+							config: {
+								...adapterConfig,
+								transaction: false,
+							},
+							adapter: ({ getDefaultModelName }) => {
+								return {
+									count: async (args: any) => {
+										const baseAdapter = await getBaseAdapter();
+										const res = await baseAdapter.count(args);
+										return res as any;
+									},
+									deleteMany: async (args: any) => {
+										const baseAdapter = await getBaseAdapter();
+										const res = await baseAdapter.deleteMany(args);
+										return res as any;
+									},
+									delete: async (args: any) => {
+										const baseAdapter = await getBaseAdapter();
+										const res = await baseAdapter.delete(args);
+										return res as any;
+									},
+									findOne: async (args) => {
+										const baseAdapter = await getBaseAdapter();
+										const res = await baseAdapter.findOne(args);
+										return res as any;
+									},
+									findMany: async (args) => {
+										const baseAdapter = await getBaseAdapter();
+										const res = await baseAdapter.findMany(args);
+										return res as any;
+									},
+									update: async (args: any) => {
+										const baseAdapter = await getBaseAdapter();
+										const res = await baseAdapter.update(args);
+										return res as any;
+									},
+									updateMany: async (args) => {
+										const baseAdapter = await getBaseAdapter();
+										const res = await baseAdapter.updateMany(args);
+										return res as any;
+									},
+									createSchema: adapter.createSchema as any,
+									async create({ data, model, select }) {
+										const defaultModelName = getDefaultModelName(model);
+										const baseAdapter = await getBaseAdapter();
+										const res = await baseAdapter.create({
+											data,
+											model: defaultModelName,
+											select,
+											forceAllowId: true,
+										});
+										createdRows[model] = [...(createdRows[model] || []), res];
+										return res as any;
+									},
+									options: adapter.options,
+								};
+							},
+						})(options);
 
-				return adapterCreator(options);
-			};
+					const wrappedAdapter = createDelegatingAdapter(async () => {
+						adapter = await helpers.adapter();
+						return adapter;
+					});
+
+					wrappedAdapter.transaction = async (callback) => {
+						adapter = await helpers.adapter();
+						return adapter.transaction(async (tx) => {
+							const txAdapter = createDelegatingAdapter(async () => tx as DBAdapter<BetterAuthOptions>);
+							return callback(txAdapter as any);
+						});
+					};
+
+					return wrappedAdapter;
+				};
 
 			const resetDebugLogs = () => {
 				//@ts-expect-error
@@ -813,8 +825,9 @@ export const createTestSuite = <
 			};
 
 			// Track the current group's migration options
-			let currentGroupMigrationOptions: BetterAuthOptions | null | undefined =
-				null;
+				let currentGroupMigrationOptions: BetterAuthOptions | null | undefined =
+					undefined;
+				let hasAppliedCurrentGroupOptions = false;
 
 			for (let i = 0; i < testEntries.length; i++) {
 				const { name: testName, testFn, migrateBetterAuth } = testEntries[i]!;
@@ -862,24 +875,46 @@ export const createTestSuite = <
 									config.defaultBetterAuthOptions || {},
 									groupMigrationOptions || {},
 								);
+								const shouldForceMigrate =
+									typeof groupMigrationOptions !== "undefined" ||
+									!deepEqual(
+										helpers.getBetterAuthOptions(),
+										groupFinalOptions,
+									);
 
-								// Only migrate if the group's options are different from current state
 								if (
+									!hasAppliedCurrentGroupOptions ||
 									!deepEqual(
 										currentGroupMigrationOptions,
 										groupMigrationOptions,
 									)
 								) {
-									await applyOptionsAndMigrate(groupFinalOptions, true);
+									await applyOptionsAndMigrate(
+										groupFinalOptions,
+										shouldForceMigrate,
+									);
 									currentGroupMigrationOptions = groupMigrationOptions;
+									hasAppliedCurrentGroupOptions = true;
 								}
 							}
 							// If this test is not in a group or not first in group, check if migration is needed
 							else if (
+								!hasAppliedCurrentGroupOptions ||
 								!deepEqual(currentGroupMigrationOptions, migrateBetterAuth)
 							) {
-								await applyOptionsAndMigrate(thisMigration, true);
+								const shouldForceMigrate =
+									typeof migrateBetterAuth !== "undefined" ||
+									!deepEqual(
+										helpers.getBetterAuthOptions(),
+										thisMigration,
+									);
+
+								await applyOptionsAndMigrate(
+									thisMigration,
+									shouldForceMigrate,
+								);
 								currentGroupMigrationOptions = migrateBetterAuth;
+								hasAppliedCurrentGroupOptions = true;
 							}
 						})();
 

@@ -37,6 +37,57 @@ type Optional<T> = {
 	[P in keyof T]?: T[P] | undefined;
 };
 
+type PrismaLikeDatabase = {
+	$connect: (...args: any[]) => Promise<unknown>;
+	$disconnect: (...args: any[]) => Promise<unknown>;
+	$transaction: <TResult>(
+		run: (tx: PrismaLikeDatabase) => Promise<TResult>,
+	) => Promise<TResult>;
+} & (
+	| {
+			$queryRaw: (...args: any[]) => Promise<unknown>;
+	  }
+	| {
+			$queryRawUnsafe: (...args: any[]) => Promise<unknown>;
+	  }
+	| {
+			$executeRaw: (...args: any[]) => Promise<unknown>;
+	  }
+);
+
+type DrizzleLikeDatabase = {
+	select: (...args: any[]) => unknown;
+	transaction: (...args: any[]) => unknown;
+	query: Record<string, unknown>;
+	dialect: Record<string, unknown>;
+};
+
+type RawPgClientLike = {
+	connect: (...args: any[]) => Promise<unknown>;
+	query: (...args: any[]) => Promise<unknown>;
+};
+
+type RawMysqlConnectionLike = {
+	execute: (...args: any[]) => Promise<unknown>;
+	beginTransaction: (...args: any[]) => Promise<unknown>;
+	commit: (...args: any[]) => Promise<unknown>;
+	rollback: (...args: any[]) => Promise<unknown>;
+};
+
+type MongoDbLike = {
+	collection: (...args: any[]) => unknown;
+	command: (...args: any[]) => unknown;
+	admin: (...args: any[]) => unknown;
+};
+
+type MongooseConnectionLike = {
+	collection: (...args: any[]) => unknown;
+	model: (...args: any[]) => unknown;
+	startSession: (...args: any[]) => Promise<unknown>;
+	asPromise?: (...args: any[]) => Promise<unknown>;
+	readyState?: number;
+};
+
 export type StoreIdentifierOption =
 	| "plain"
 	| "hashed"
@@ -466,8 +517,15 @@ export type BetterAuthOptions = {
 	database?:
 		| (
 				| PostgresPool
+				| RawPgClientLike
 				| MysqlPool
+				| RawMysqlConnectionLike
 				| SqliteDatabase
+				| PrismaLikeDatabase
+				| DrizzleLikeDatabase
+				| Kysely<any>
+				| MongoDbLike
+				| MongooseConnectionLike
 				| Dialect
 				| DBAdapterInstance
 				| BunDatabase

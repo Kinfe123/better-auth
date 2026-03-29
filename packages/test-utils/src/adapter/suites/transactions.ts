@@ -29,12 +29,12 @@ export const transactionsTestSuite = createTestSuite(
 					await tx.create({ model: "user", data: user2, forceAllowId: true });
 				}),
 			).rejects.toThrow("Simulated failure");
-			const result = await adapter.findMany<User>({
+			const resultCount = await adapter.count({
 				model: "user",
 			});
 			//Transactions made rows are unable to be automatically cleaned up, so we need to clean them up manually
 			await hardCleanup();
-			expect(result.length).toBe(0);
+			expect(resultCount).toBe(0);
 		},
 	}),
 );

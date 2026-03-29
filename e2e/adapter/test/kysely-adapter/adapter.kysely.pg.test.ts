@@ -19,8 +19,12 @@ import {
 	schemaRefTestSuite,
 } from "./schema-reference-test-suite";
 
+const PG_CONNECTION_STRING =
+	process.env.BA_KYSELY_POSTGRES_URL ??
+	"postgres://user:password@localhost:5433/better_auth";
+
 const pgDB = new Pool({
-	connectionString: "postgres://user:password@localhost:5433/better_auth",
+	connectionString: PG_CONNECTION_STRING,
 });
 
 const kyselyDB = new Kysely({
