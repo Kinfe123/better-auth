@@ -15,8 +15,12 @@ import {
 } from "../adapter-factory";
 import { generateDrizzleSchema, resetGenerationCount } from "./generate-schema";
 
+const MYSQL_CONNECTION_URI =
+	process.env.BA_DRIZZLE_MYSQL_URL ??
+	"mysql://user:password@localhost:3306/better_auth";
+
 const mysqlDB = createPool({
-	uri: "mysql://user:password@localhost:3306/better_auth",
+	uri: MYSQL_CONNECTION_URI,
 	timezone: "Z",
 });
 
@@ -40,7 +44,7 @@ const { execute } = await testAdapter({
 			"mysql",
 		);
 
-		const command = `npx drizzle-kit push --dialect=mysql --schema=${fileName}.ts --url=mysql://user:password@localhost:3306/better_auth`;
+		const command = `npx drizzle-kit push --dialect=mysql --schema=${fileName}.ts --url=${MYSQL_CONNECTION_URI}`;
 		console.log(`Running: ${command}`);
 		console.log(`Options:`, betterAuthOptions);
 		try {

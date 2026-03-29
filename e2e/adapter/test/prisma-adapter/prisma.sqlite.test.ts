@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import type { BetterAuthOptions } from "@better-auth/core";
 import { prismaAdapter } from "@better-auth/prisma-adapter";
 import { testAdapter } from "@better-auth/test-utils/adapter";
@@ -20,21 +21,39 @@ import {
 import { pushPrismaSchema } from "./push-prisma-schema";
 
 const dialect = "sqlite";
+const workspaceName = "sqlite-legacy";
+const databaseUrl = `file:${fileURLToPath(new URL("./legacy-dev.db", import.meta.url))}`;
 const { execute } = await testAdapter({
 	adapter: async () => {
-		const db = await getPrismaClient(dialect);
+		const db = await getPrismaClient(dialect, {
+			workspaceName,
+			databaseUrl,
+		});
 		return prismaAdapter(db, {
 			provider: dialect,
 			debugLogs: { isRunningAdapterTests: true },
 		});
 	},
 	runMigrations: async (options: BetterAuthOptions) => {
-		const db = await getPrismaClient(dialect);
-		const migrationCount = incrementMigrationCount();
+		const db = await getPrismaClient(dialect, {
+			workspaceName,
+			databaseUrl,
+		});
+		const migrationCount = incrementMigrationCount(workspaceName);
 		await generateAuthConfigFile(options);
-		await generatePrismaSchema(options, db, migrationCount, dialect);
-		await pushPrismaSchema(dialect);
-		destroyPrismaClient({ migrationCount: migrationCount - 1, dialect });
+		await generatePrismaSchema(
+			options,
+			db,
+			migrationCount,
+			dialect,
+			workspaceName,
+		);
+		await destroyPrismaClient({
+			migrationCount: migrationCount - 1,
+			dialect,
+			workspaceName,
+		});
+		await pushPrismaSchema(dialect, options, workspaceName, databaseUrl);
 	},
 	tests: [
 		normalTestSuite(),

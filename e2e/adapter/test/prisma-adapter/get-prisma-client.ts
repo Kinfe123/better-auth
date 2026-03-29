@@ -5,41 +5,62 @@ import { DATABASE_URLS } from "./constants";
 
 type PC = InstanceType<typeof PrismaClient>;
 
-async function createAdapter(dialect: Dialect) {
+async function createAdapter(dialect: Dialect, databaseUrl?: string) {
 	if (dialect === "sqlite") {
 		const { PrismaBetterSqlite3 } = await import(
 			"@prisma/adapter-better-sqlite3"
 		);
-		return new PrismaBetterSqlite3({ url: DATABASE_URLS[dialect] });
+		return new PrismaBetterSqlite3({
+			url: databaseUrl || DATABASE_URLS[dialect],
+		});
 	}
 	if (dialect === "postgresql") {
 		const { PrismaPg } = await import("@prisma/adapter-pg");
-		return new PrismaPg({ connectionString: DATABASE_URLS[dialect] });
+		return new PrismaPg({
+			connectionString: databaseUrl || DATABASE_URLS[dialect],
+		});
 	}
+
+	const mysqlUrl = new URL(databaseUrl || DATABASE_URLS[dialect]);
+
 	// mysql — use object config instead of URL string to avoid
 	// mariadb driver hanging on URL-based connection strings.
 	const { PrismaMariaDb } = await import("@prisma/adapter-mariadb");
 	return new PrismaMariaDb({
-		host: "localhost",
-		port: 3308,
-		user: "user",
-		password: "password",
-		database: "better_auth",
+		host: mysqlUrl.hostname,
+		port: Number(mysqlUrl.port || 3306),
+		user: decodeURIComponent(mysqlUrl.username),
+		password: decodeURIComponent(mysqlUrl.password),
+		database: mysqlUrl.pathname.replace(/^\//, ""),
 	});
 }
 
-let migrationCount = 0;
 const clientMap = new Map<string, PC>();
-export const getPrismaClient = async (dialect: Dialect) => {
-	if (clientMap.has(`${dialect}-${migrationCount}`)) {
-		return clientMap.get(`${dialect}-${migrationCount}`) as PC;
+
+function getMigrationCount(workspaceName: string) {
+	return migrationCounts.get(workspaceName) ?? 0;
+}
+
+const migrationCounts = new Map<string, number>();
+export const getPrismaClient = async (
+	dialect: Dialect,
+	options?: {
+		workspaceName?: string;
+		databaseUrl?: string;
+	},
+) => {
+	const workspaceName = options?.workspaceName || dialect;
+	const migrationCount = getMigrationCount(workspaceName);
+	const clientKey = `${workspaceName}-${migrationCount}`;
+	if (clientMap.has(clientKey)) {
+		return clientMap.get(clientKey) as PC;
 	}
 	const { PrismaClient } = await import(
 		fileURLToPath(
 			new URL(
 				migrationCount === 0
 					? "./.tmp/prisma-client-base/client.ts"
-					: `./.tmp/prisma-client-${dialect}-${migrationCount}/client.ts`,
+					: `./.tmp/prisma-client-${workspaceName}-${migrationCount}/client.ts`,
 				import.meta.url,
 			),
 		)
@@ -49,28 +70,35 @@ export const getPrismaClient = async (dialect: Dialect) => {
 	// schema generation, not actual database queries.
 	const adapter =
 		migrationCount === 0
-			? await createAdapter("sqlite")
-			: await createAdapter(dialect);
+			? await createAdapter("sqlite", options?.databaseUrl)
+			: await createAdapter(dialect, options?.databaseUrl);
 	const db = new PrismaClient({ adapter });
-	clientMap.set(`${dialect}-${migrationCount}`, db);
+	clientMap.set(clientKey, db);
 	return db as PC;
 };
 
-export const incrementMigrationCount = () => {
-	migrationCount++;
-	return migrationCount;
+export const incrementMigrationCount = (workspaceName: string) => {
+	const nextValue = getMigrationCount(workspaceName) + 1;
+	migrationCounts.set(workspaceName, nextValue);
+	return nextValue;
 };
 
 export const destroyPrismaClient = ({
 	migrationCount,
 	dialect,
+	workspaceName,
 }: {
 	migrationCount: number;
 	dialect: Dialect;
+	workspaceName?: string;
 }) => {
-	const db = clientMap.get(`${dialect}-${migrationCount}`);
+	const clientKey = `${workspaceName || dialect}-${migrationCount}`;
+	const db = clientMap.get(clientKey);
 	if (db) {
-		db.$disconnect();
+		return db.$disconnect().finally(() => {
+			clientMap.delete(clientKey);
+		});
 	}
-	clientMap.delete(`${dialect}-${migrationCount}`);
+	clientMap.delete(clientKey);
+	return Promise.resolve();
 };

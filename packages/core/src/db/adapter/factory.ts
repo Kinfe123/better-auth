@@ -830,16 +830,16 @@ export const createAdapterFactory =
 
 		let lazyLoadTransaction: DBAdapter<Options>["transaction"] | null = null;
 		const adapter: DBAdapter<Options> = {
-			transaction: async (cb) => {
-				if (!lazyLoadTransaction) {
-					if (!config.transaction) {
-						lazyLoadTransaction = createAsIsTransaction(adapter);
-					} else {
-						logger.debug(
-							`[${config.adapterName}] - Using provided transaction implementation.`,
-						);
-						lazyLoadTransaction = config.transaction;
-					}
+				transaction: async (cb) => {
+					if (!lazyLoadTransaction) {
+						if (!config.transaction) {
+							lazyLoadTransaction = createAsIsTransaction(adapter);
+						} else {
+							logger.debug(
+								`[${config.adapterName}] - Using provided transaction implementation.`,
+							);
+							lazyLoadTransaction = config.transaction;
+						}
 				}
 				return lazyLoadTransaction(cb);
 			},
