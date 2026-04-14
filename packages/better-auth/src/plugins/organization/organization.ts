@@ -5,6 +5,7 @@ import { APIError } from "@better-auth/core/error";
 import * as z from "zod";
 import { getSessionFromCtx } from "../../api";
 import { shimContext } from "../../utils/shim";
+import { PACKAGE_VERSION } from "../../version";
 import type { AccessControl, ArrayElement } from "../access";
 import type { defaultStatements } from "./access";
 import { defaultRoles } from "./access";
@@ -81,6 +82,7 @@ export type { OrganizationOptions } from "./types";
 
 export type DefaultOrganizationPlugin<Options extends OrganizationOptions> = {
 	id: "organization";
+	version: string;
 	endpoints: OrganizationEndpoints<Options>;
 	schema: OrganizationSchema<Options>;
 	$Infer: {
@@ -164,13 +166,11 @@ const createHasPermissionBodySchema = z
 		organizationId: z.string().optional(),
 	})
 	.and(
-		z.union([
+		z.xor([
 			z.object({
 				permission: z.record(z.string(), z.array(z.string())),
-				permissions: z.record(z.string(), z.array(z.string())).optional(),
 			}),
 			z.object({
-				permission: z.record(z.string(), z.array(z.string())).optional(),
 				permissions: z.record(z.string(), z.array(z.string())),
 			}),
 		]),
@@ -292,6 +292,7 @@ const createHasPermission = <O extends OrganizationOptions>(options: O) => {
 
 export type OrganizationPlugin<O extends OrganizationOptions> = {
 	id: "organization";
+	version: string;
 	endpoints: OrganizationEndpoints<O> &
 		(O extends { teams: { enabled: true } } ? TeamEndpoints<O> : {}) &
 		(O extends { dynamicAccessControl: { enabled: true } }
@@ -347,6 +348,7 @@ export function organization<
 	options?: O | undefined,
 ): {
 	id: "organization";
+	version: string;
 	endpoints: OrganizationEndpoints<O> & TeamEndpoints<O>;
 	schema: OrganizationSchema<O>;
 	$Infer: {
@@ -378,6 +380,7 @@ export function organization<
 	options?: O | undefined,
 ): {
 	id: "organization";
+	version: string;
 	endpoints: OrganizationEndpoints<O> &
 		TeamEndpoints<O> &
 		DynamicAccessControlEndpoints<O>;
@@ -411,6 +414,7 @@ export function organization<
 	options?: O | undefined,
 ): {
 	id: "organization";
+	version: string;
 	endpoints: OrganizationEndpoints<O> & DynamicAccessControlEndpoints<O>;
 	schema: OrganizationSchema<O>;
 	$Infer: {
@@ -1204,6 +1208,7 @@ export function organization<O extends OrganizationOptions>(options?: O) {
 
 	return {
 		id: "organization",
+		version: PACKAGE_VERSION,
 		endpoints: {
 			...(api as OrganizationEndpoints<O>),
 			hasPermission: createHasPermission(opts),
