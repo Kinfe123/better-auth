@@ -1,0 +1,200 @@
+---
+title: "Root"
+description: "Overview for Root."
+---
+
+# Root
+
+<p align="center" <picture <source srcset="./banner dark.png" media="(prefers color scheme: dark)"/ <source srcset="./banner.png" media="(prefers color scheme: light)"/ <img src="./banner.png" alt="Better Auth Logo"/ </picture <h2 align="center" Better Auth </h2
+## Product Story
+Root is documented as a product with capabilities, workflows, configuration decisions, and integration surfaces. These pages are organized so a reader can understand the purpose of the project before they need to inspect source files.
+## Reader Paths
+- Start with the feature pages to understand what the product lets users or operators do.
+- Use self-hosting pages when deciding how the package fits into a framework or production deployment.
+- Use configuration pages to understand security, database, metadata, events, and runtime behavior.
+- Use API reference pages after the product model is clear and you need import paths, handlers, or typed contracts.
+## Knowledge Model
+Each page answers four questions: what the concept is, why it matters, how a developer or operator uses it, and where maintainers can verify the implementation. File paths and exports are kept as supporting evidence rather than the main explanation.
+## Documentation Map
+- Get Started: [Installation](/docs/installation) - Core install and configuration workflow.
+- Get Started: [Root](/docs) - Core landing page for the docs app.
+- Get Started: [Quickstart](/docs/quickstart) - Core first-run workflow.
+- Core Features: [Developer Tools](/docs/features/developer-tools) - Detected feature evidence with confidence 0.96.
+- Core Features: [Session Management](/docs/features/session-management) - Detected feature evidence with confidence 0.98.
+- Core Features: [User Management](/docs/features/user-management) - Detected feature evidence with confidence 0.36.
+- Self-Hosting: [Self-Hosting Overview](/docs/self-hosting/overview) - Detected self-hosting evidence with confidence 0.36.
+- Configuration: [Access Control](/docs/configuration/access-control) - Detected configuration evidence with confidence 0.36.
+- Configuration: [Database Adapters](/docs/configuration/database-adapters) - Detected configuration evidence with confidence 0.76.
+- Configuration: [Event Ingestion](/docs/configuration/event-ingestion) - Detected configuration evidence with confidence 0.76.
+- Configuration: [IP Geolocation](/docs/configuration/ip-geolocation) - Detected configuration evidence with confidence 0.98.
+- Configuration: [Metadata](/docs/configuration/metadata) - Detected configuration evidence with confidence 0.52.
+- Guides: [Bulk Operations](/docs/guides/bulk-operations) - Detected guide evidence with confidence 0.60.
+- Guides: [CLI Usage](/docs/guides/cli-usage) - Detected guide evidence with confidence 0.98.
+- Guides: [Custom Branding](/docs/guides/custom-branding) - Detected guide evidence with confidence 0.52.
+- Guides: [Troubleshooting](/docs/guides/troubleshooting) - Detected guide evidence with confidence 0.52.
+- API Reference: [Start Command](/docs/api/cli/start) - Detected api evidence with confidence 0.92.
+- API Reference: [Access Config](/docs/api/config/access-config) - Detected api evidence with confidence 0.84.
+- API Reference: [Events Config](/docs/api/config/events-config) - Detected api evidence with confidence 0.84.
+- API Reference: [Metadata Config](/docs/api/config/metadata-config) - Detected api evidence with confidence 0.84.
+- API Reference: [Studio Config](/docs/api/config/studio-config) - Detected api evidence with confidence 0.84.
+## Maintainer Snapshot
+- Project type: `cli`
+- Package name: `@better-auth/root`
+- Detected runtimes/adapters: Gin, Next.js, SvelteKit
+- Bootstrap evidence: `README.md`, `package.json`, `demo/electron/electron.vite.config.ts`, `demo/electron/package.json`, `demo/expo/components.json`, `demo/expo/package.json`, `demo/expo/src/lib/auth.ts`, `demo/expo/tailwind.config.js`, `demo/nextjs/components.json`, `demo/nextjs/lib/auth.ts`, `demo/nextjs/next.config.ts`, `demo/nextjs/package.json`, `demo/nextjs/postcss.config.mjs`, `demo/oidc-client/package.json`, `demo/oidc-client/tailwind.config.ts`, `demo/oidc-client/vite.config.ts`, `demo/stateless/next.config.ts`, `demo/stateless/package.json`, `demo/stateless/postcss.config.mjs`, `demo/stateless/src/lib/auth.ts`, `demo/stateless/tailwind.config.ts`, `docker-compose.yml`, `docs/components.json`, `docs/next.config.js`, `docs/package.json`, `docs/postcss.config.mjs`, `e2e/adapter/package.json`, `e2e/adapter/test/adapter-factory/package.json`, `e2e/adapter/test/drizzle-adapter/package.json`, `e2e/adapter/test/kysely-adapter/package.json`, `e2e/adapter/test/memory-adapter/package.json`, `e2e/adapter/test/mongo-adapter/package.json`, `e2e/adapter/test/prisma-adapter/package.json`, `e2e/integration/package.json`, `e2e/integration/solid-vinxi/package.json`, `e2e/integration/solid-vinxi/src/lib/auth.ts`, `e2e/integration/test-utils/package.json`, `e2e/integration/vanilla-node/package.json`, `e2e/integration/vanilla-node/vite.config.ts`, `e2e/smoke/package.json`, `e2e/smoke/test/fixtures/cloudflare/drizzle.config.ts`, `e2e/smoke/test/fixtures/cloudflare/package.json`, `e2e/smoke/test/fixtures/cloudflare/wrangler.json`, `e2e/smoke/test/fixtures/esbuild/package.json`, `e2e/smoke/test/fixtures/ipv6/package.json`, `e2e/smoke/test/fixtures/tsconfig-declaration/package.json`, `e2e/smoke/test/fixtures/tsconfig-exact-optional-property-types/package.json`, `e2e/smoke/test/fixtures/tsconfig-isolated-module-bundler/package.json`, `e2e/smoke/test/fixtures/tsconfig-verbatim-module-syntax-node10/package.json`, `e2e/smoke/test/fixtures/vite/package.json`, `e2e/smoke/test/fixtures/vite/vite.config.ts`, `packages/api-key/package.json`, `packages/better-auth/package.json`, `packages/better-auth/src/types/auth.ts`, `packages/cli/package.json`, `packages/core/package.json`, `packages/core/src/social-providers/railway.ts`, `packages/core/src/social-providers/vercel.ts`, `packages/drizzle-adapter/package.json`, `packages/electron/package.json`, `packages/expo/package.json`, `packages/i18n/package.json`, `packages/kysely-adapter/package.json`, `packages/memory-adapter/package.json`, `packages/mongo-adapter/package.json`, `packages/oauth-provider/package.json`, `packages/passkey/package.json`, `packages/prisma-adapter/package.json`, `packages/redis-storage/package.json`, `packages/scim/package.json`, `packages/sso/package.json`, `packages/stripe/package.json`, `packages/telemetry/package.json`, `packages/test-utils/package.json`, `test/package.json`, `packages/cli/src/commands/init/generate-auth-client.ts`, `packages/cli/src/commands/init/generate-auth.ts`, `packages/cli/src/commands/init/utility/auth-client-config.ts`, `packages/cli/src/commands/init/utility/auth-config.test.ts`, `packages/cli/src/commands/init/utility/auth-config.ts`, `packages/cli/src/commands/login.ts`, `packages/cli/src/commands/mcp.ts`, `packages/cli/test/install-dependencies.test.ts`, `packages/core/src/db/schema/session.ts`, `packages/core/src/oauth2/client-credentials-token.ts`, `README.md#about-the-project`, `README.md#contribution`, `README.md#security`, `README.md#why-better-auth`, `package.json:@arethetypeswrong/cli`, `package.json:@changesets/cli`, `packages/cli/src/api.ts`, `packages/cli/src/commands/ai.ts`, `packages/cli/src/commands/generate.ts`, `packages/cli/src/commands/info.ts`, `packages/cli/src/commands/init/configs/databases.config.ts`, `packages/cli/src/commands/init/configs/frameworks.config.ts`, `packages/cli/src/commands/init/configs/social-providers.config.ts`, `packages/cli/src/commands/init/configs/temp-plugins.config.ts`, `packages/core/src/db/schema/account.ts`, `packages/core/src/db/schema/user.ts`, `package.json:knip`, `package.json:typescript`, `packages/core/src/utils/ip.test.ts`, `packages/core/src/utils/ip.ts`, `packages/cli/src/commands/init/utility/database.test.ts`, `packages/cli/src/commands/init/utility/database.ts`, `packages/cli/src/generators/drizzle.ts`, `packages/cli/src/generators/prisma.ts`, `packages/core/src/db/adapter/factory.ts`, `packages/core/src/db/adapter/get-default-field-name.ts`, `packages/core/src/db/adapter/get-default-model-name.ts`, `packages/core/src/oauth2/oauth-provider.ts`, `packages/core/src/social-providers/apple.ts`, `packages/core/src/social-providers/atlassian.ts`, `packages/core/src/social-providers/cognito.ts`, `packages/core/src/social-providers/discord.ts`, `packages/core/src/social-providers/dropbox.ts`, `packages/core/src/social-providers/facebook.ts`, `packages/core/src/utils/fetch-metadata.test.ts`, `packages/core/src/utils/fetch-metadata.ts`, `packages/core/src/oauth2/refresh-access-token.test.ts`, `packages/core/src/oauth2/refresh-access-token.ts`, `packages/cli/src/commands/init/utility/imports.test.ts`, `packages/cli/src/commands/init/utility/imports.ts`, `packages/cli/test/generate.test.ts`, `packages/api-key/src/routes/verify-api-key.ts`, `packages/cli/src/utils/config-paths.ts`, `packages/cli/test/__snapshots__/migrations-uuid.sql`, `packages/cli/test/__snapshots__/migrations.sql`, `packages/core/src/error/codes.ts`, `packages/core/src/error/index.ts`, `packages/core/src/oauth2/verify.ts`, `packages/core/src/utils/error-codes.ts`, `packages/cli/src/commands/init/index.ts`, `packages/cli/src/utils/install-dependencies.ts`, `packages/core/src/types/init-options.ts`, `packages/core/tsdown.config.ts`, `packages/api-key/src/routes/create-api-key.ts`, `packages/api-key/src/routes/delete-all-expired-api-keys.ts`, `packages/api-key/src/routes/delete-api-key.ts`, `packages/api-key/src/routes/get-api-key.ts`, `packages/api-key/src/routes/index.ts`, `packages/api-key/src/routes/list-api-keys.ts`, `packages/api-key/src/routes/update-api-key.ts`, `packages/cli/src/commands/init/utility/env.ts`, `packages/cli/src/commands/init/utility/format.ts`, `packages/cli/src/commands/init/utility/framework.ts`, `packages/cli/src/commands/init/utility/index.ts`, `packages/cli/src/commands/init/utility/plugin.ts`, `packages/cli/src/commands/init/utility/prompt.ts`, `packages/cli/src/commands/migrate.ts`, `packages/cli/src/commands/secret.ts`, `packages/cli/src/commands/upgrade.ts`, `packages/cli/src/generators/index.ts`, `packages/cli/src/generators/kysely.ts`, `packages/cli/src/generators/types.ts`, `packages/cli/src/index.ts`, `packages/cli/src/utils/add-cloudflare-modules.ts`, `packages/cli/src/utils/add-svelte-kit-env-modules.ts`, `packages/cli/src/utils/check-package-managers.ts`, `packages/cli/src/utils/fetch-latest-version.ts`, `packages/cli/src/utils/get-config.ts`, `packages/cli/src/utils/get-package-info.ts`, `packages/cli/src/utils/helper.ts`, `packages/cli/test/get-config.test.ts`, `packages/cli/test/test-utils.ts`, `packages/cli/test/utils.ts`, `packages/core/src/api/index.ts`, `packages/core/src/async_hooks/index.ts`, `packages/core/src/async_hooks/pure.index.ts`, `packages/core/src/context/endpoint-context.ts`, `packages/core/src/context/global.ts`, `packages/core/src/context/index.ts`, `packages/core/src/context/request-state.ts`, `packages/core/src/context/transaction.ts`, `packages/core/src/db/adapter/get-field-attributes.ts`, `packages/core/src/db/adapter/get-field-name.ts`, `packages/core/src/db/adapter/get-id-field.ts`, `packages/core/src/db/adapter/get-model-name.ts`, `packages/core/src/db/adapter/index.ts`, `packages/core/src/db/adapter/types.ts`, `packages/core/src/db/adapter/utils.ts`, `packages/core/src/db/get-tables.ts`, `packages/core/src/db/index.ts`, `packages/core/src/db/plugin.ts`, `packages/core/src/db/schema/rate-limit.ts`, `packages/core/src/db/schema/shared.ts`, `packages/core/src/db/schema/verification.ts`, `packages/core/src/db/type.ts`, `packages/core/src/env/color-depth.ts`, `packages/core/src/env/env-impl.ts`, `packages/core/src/env/index.ts`, `packages/core/src/env/logger.ts`, `packages/core/src/index.ts`, `packages/core/src/instrumentation/attributes.ts`, `packages/core/src/instrumentation/index.ts`, `packages/core/src/instrumentation/tracer.ts`, `packages/core/src/oauth2/create-authorization-url.ts`, `packages/core/src/oauth2/index.ts`, `packages/core/src/oauth2/utils.ts`, `packages/core/src/oauth2/validate-authorization-code.ts`, `packages/core/src/social-providers/figma.ts`, `packages/core/src/social-providers/github.ts`, `packages/core/src/social-providers/gitlab.ts`, `packages/core/src/social-providers/google.ts`, `packages/core/src/social-providers/huggingface.ts`, `packages/core/src/social-providers/index.ts`, `packages/core/src/social-providers/kakao.ts`, `packages/core/src/social-providers/kick.ts`, `packages/core/src/social-providers/line.ts`, `packages/core/src/social-providers/linear.ts`, `packages/core/src/social-providers/linkedin.ts`, `packages/core/src/social-providers/microsoft-entra-id.ts`, `packages/core/src/social-providers/naver.ts`, `packages/core/src/social-providers/notion.ts`, `packages/core/src/social-providers/paybin.ts`, `packages/core/src/social-providers/paypal.ts`, `packages/core/src/social-providers/polar.ts`, `packages/core/src/social-providers/reddit.ts`, `packages/core/src/social-providers/roblox.ts`, `packages/core/src/social-providers/salesforce.ts`, `packages/core/src/social-providers/slack.ts`, `packages/core/src/social-providers/spotify.ts`, `packages/core/src/social-providers/tiktok.ts`, `packages/core/src/social-providers/twitch.ts`, `packages/core/src/social-providers/twitter.ts`, `packages/core/src/social-providers/vk.ts`, `packages/core/src/social-providers/wechat.ts`, `packages/core/src/social-providers/zoom.ts`, `packages/core/src/types/context.ts`, `packages/core/src/types/cookie.ts`, `packages/core/src/types/helper.ts`, `packages/core/src/types/index.ts`, `packages/core/src/types/plugin-client.ts`, `packages/core/src/types/plugin.ts`, `packages/core/src/types/secret.ts`, `packages/core/src/utils/db.ts`, `packages/core/src/utils/deprecate.ts`, `packages/core/src/utils/id.ts`, `packages/core/src/utils/json.ts`, `packages/core/src/utils/string.ts`, `packages/core/src/utils/url.ts`
+## Core Capabilities
+- Session Management: This area explains how the product observes active authentication state. It connects user identity, session creation, sign-in activity, cookies or tokens, and any security-sensitive controls exposed to administrators. Key concepts: sessions, sign in, tokens, cookies.
+- Developer Tools: This section explains the utilities that help developers inspect, configure, or generate parts of the product. These tools are not just UI screens; they are shortcuts for common setup, debugging, schema, email, or integration work. Key concepts: developer tools, generators, inspectors, visual editors.
+- User Management: This capability is the administrative surface for user records. It helps an operator inspect accounts, find a user by identity, update profile or verification state, and remove records when needed. In an auth-oriented product, this page is usually one of the highest-value docs pages because it explains the exact model an admin interacts with. Key concepts: users, accounts, profiles, email verification.
+- Self-Hosting Overview: Self-hosting explains how the package runs inside or next to a user's own application. It clarifies which pieces are required at runtime, how the host app mounts the product, and what infrastructure must be available in production. Key concepts: runtime dependency, host application, deployment, container.
+- IP Geolocation: IP geolocation enriches security and activity views with approximate location context. It usually depends on a provider or database file, so this page separates required config, optional provider tokens, and privacy-sensitive behavior. Key concepts: IP address, geolocation provider, GeoLite, session metadata.
+- Database Adapters: Database adapter docs explain how the product connects to the same persistence layer as the host auth system. They identify supported adapters, the expected provider names, and what needs to be migrated before the UI can read or write records safely. Key concepts: Prisma, Drizzle, SQLite, Postgres.
+- Event Ingestion: Event ingestion describes how activity enters the product. It explains provider responsibilities, event shape, helper functions, and how ingested events become visible in dashboards, timelines, or last-seen fields. Key concepts: event provider, event type, severity, helpers.
+- Metadata: Metadata controls how the product presents itself to administrators. This usually includes title, theme, branding, and other non-functional settings that make the embedded experience feel native to the host application. Key concepts: title, theme, branding, labels.
+- Access Control: Access control defines who can open and operate the administrative surface. This page explains the relationship between roles, explicit email allowlists, IP rules, and the default behavior when no rule matches. Key concepts: roles, allowlist, blocklist, admin access.
+- CLI Usage: CLI usage explains the command-line mental model: which commands exist, when to use each command, which flags affect runtime behavior, and how the CLI discovers project configuration. Key concepts: commands, flags, config discovery, local development.
+- Bulk Operations: Bulk operations help operators or developers create, update, export, or seed many records at once. This page explains safety boundaries because bulk actions can change a lot of data quickly. Key concepts: bulk actions, seed data, import, export.
+- Custom Branding: Custom branding explains how the embedded experience can match the host product. It helps developers understand the difference between visual customization and behavior-changing configuration. Key concepts: brand title, theme, logo, metadata.
+- Troubleshooting: Troubleshooting turns known setup failures into clear recovery paths. It connects symptoms to likely causes, points at the files or settings to inspect, and gives safe verification steps. Key concepts: configuration discovery, runtime errors, database migrations, permissions.
+## Runtime and Adapter Coverage
+- Gin
+- Next.js
+- SvelteKit
+## Language Coverage
+- TypeScript: 154 analyzed source files
+- SQL: 2 analyzed source files
+## Config Files
+- `demo/electron/electron.vite.config.ts` (framework) - Vite application configuration.
+- `demo/electron/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/expo/components.json` (ui) - shadcn/ui component aliases and project structure.
+- `demo/expo/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/expo/src/lib/auth.ts` (product) - Product runtime configuration.
+- `demo/expo/tailwind.config.js` (styling) - Styling and CSS pipeline configuration.
+- `demo/nextjs/components.json` (ui) - shadcn/ui component aliases and project structure.
+- `demo/nextjs/lib/auth.ts` (product) - Product runtime configuration.
+- `demo/nextjs/next.config.ts` (framework) - Next.js application configuration.
+- `demo/nextjs/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/nextjs/postcss.config.mjs` (styling) - Styling and CSS pipeline configuration.
+- `demo/oidc-client/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/oidc-client/tailwind.config.ts` (styling) - Styling and CSS pipeline configuration.
+- `demo/oidc-client/vite.config.ts` (framework) - Vite application configuration.
+- `demo/stateless/next.config.ts` (framework) - Next.js application configuration.
+- `demo/stateless/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/stateless/postcss.config.mjs` (styling) - Styling and CSS pipeline configuration.
+- `demo/stateless/src/lib/auth.ts` (product) - Product runtime configuration.
+- `demo/stateless/tailwind.config.ts` (styling) - Styling and CSS pipeline configuration.
+- `docker-compose.yml` (deployment) - Container or Docker Compose setup.
+- `docs/components.json` (ui) - shadcn/ui component aliases and project structure.
+- `docs/next.config.js` (framework) - Next.js application configuration.
+- `docs/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `docs/postcss.config.mjs` (styling) - Styling and CSS pipeline configuration.
+- `e2e/adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/adapter-factory/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/drizzle-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/kysely-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/memory-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/mongo-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+## Available Commands
+- `prepare`: `lefthook install --reset-hooks-path`
+- `build`: `turbo build --filter=./packages/*`
+- `dev`: `turbo dev --filter=./packages/* --filter=!./packages/cli`
+- `clean`: `turbo clean --filter=./packages/* && rm -rf node_modules`
+- `format`: `biome format . --write`
+- `format:md`: `pnpm --filter docs format:md`
+- `format:check`: `pnpm --filter docs format:check`
+- `lint`: `biome check . --error-on-warnings`
+- `lint:dependencies`: `knip && knip --production`
+- `lint:fix`: `biome check . --fix --unsafe`
+- `lint:spell`: `cspell . --color`
+- `lint:types`: `turbo lint:types --filter=./packages/*`
+- `lint:packages`: `turbo lint:package --filter=./packages/*`
+- `changeset`: `changeset`
+- `ci:version`: `changeset version && pnpm install --no-frozen-lockfile`
+- `ci:release`: `turbo clean --filter=./packages/* && turbo build --filter=./packages/* && changeset publish`
+- `test`: `turbo test --continue --filter=./packages/* --filter=./test/*`
+- `coverage`: `turbo coverage --filter=./packages/* --filter=./test/*`
+- `postcoverage`: `pnpm coverage:collect && pnpm coverage:merge && pnpm coverage:report`
+- `coverage:merge`: `nyc merge coverage/raw coverage/merged/merged-coverage.json`
+- `coverage:collect`: `rm -rf coverage && mkdir -p coverage/raw && for f in $(find packages test -name coverage-final.json); do pkg=$(basename "$(dirname "$(dirname "$f")")"); cp "$f" "./coverage/raw/$pkg-coverage-final.json"; done`
+- `coverage:report`: `nyc --temp-dir=./coverage/raw report --reporter=lcov --reporter text-summary`
+- `coverage:open`: `open coverage/lcov-report/index.html`
+- `e2e:smoke`: `turbo e2e:smoke`
+- `e2e:integration`: `turbo e2e:integration`
+- `typecheck`: `tsc --build`
+- `typecheck:dist`: `tsc --project tsconfig.dist-check.json`
+## Configuration Surface
+- `APPDATA`
+- `AUTH_SECRET`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_TELEMETRY_ENDPOINT`
+- `DATABASE_URL`
+- `NODE_ENV`
+- `npm_config_user_agent`
+## Dependencies
+- `@arethetypeswrong/cli` (devDependency): `^0.18.2`
+- `@biomejs/biome` (devDependency): `2.4.4`
+- `@changesets/changelog-github` (devDependency): `^0.6.0`
+- `@changesets/cli` (devDependency): `^2.30.0`
+- `@types/bun` (devDependency): `^1.3.9`
+- `@types/node` (devDependency): `^25.3.2`
+- `@vitest/coverage-istanbul` (devDependency): `catalog:vitest`
+- `@vitest/ui` (devDependency): `catalog:vitest`
+- `cspell` (devDependency): `^9.7.0`
+- `knip` (devDependency): `^5.85.0`
+- `lefthook` (devDependency): `^2.1.4`
+- `nyc` (devDependency): `^17.1.0`
+- `publint` (devDependency): `^0.3.17`
+- `turbo` (devDependency): `^2.9.3`
+- `typescript` (devDependency): `catalog:`
+- `vitest` (devDependency): `catalog:vitest`
+## README Sections
+- ## About the Project
+- ### Why Better Auth
+- ## Contribution
+- ## Security
+## Named Exports
+- `__getBetterAuthGlobal`
+- `account`
+- `Account`
+- `accountSchema`
+- `AccountStatus`
+- `AdapterFactory`
+- `AdapterFactoryConfig`
+- `AdapterFactoryCustomizeAdapterCreator`
+- `AdapterFactoryOptions`
+- `adapters`
+- `AdapterTestDebugLogs`
+- `addCloudflareModules`
+## CLI Options
+- `--adapter`: flag is provided
+- `--args`: {"key":"value"}'`,
+- `--capabilities`
+- `--claude-code`: ) + chalk.gray("Add to Claude Code"),
+- `--config`: <config>",
+- `--copy`: flag to copy output to clipboard
+- `--cursor`: ) + chalk.gray("Add to Cursor
+- `--cwd`: <cwd>",
+- `--dev`: for dev dependencies",
+- `--dialect`: <dialect>",
+- `--force`: better-auth",
+- `--help`: to see all commands.\n",
+- `--json`: flag for JSON output
+- `--manual`: ) + chalk.gray("Manual configuration"),
+- `--open-code`: ) + chalk.gray("Add to Open Code
+- `--optional`: for optional dependencies",
+- `--output`: <output>", "the file to output to the generated schema
+- `--package-manager`: <package-manager>",
+- `--peer`: for peer dependencies",
+- `--provider`: <url> --capabilities <cap1> <cap2>",
+- `--registry-url`
+- `--save-catalog`: for catalog dependencies",
+- `--save-catalog-name`: ${name}
+- `--save-dev`: for dev dependencies",
+- `--save-optional`: for optional dependencies",
+- `--save-peer`
+- `--scope`: project",
+- `--skill`: ${skillName}
+- `--transport`: http better-auth ${REMOTE_MCP_URL}
+- `--version`
+- `--y`: is deprecated. Consider -y or --yes
+- `--yes`

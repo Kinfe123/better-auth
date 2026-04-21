@@ -1,0 +1,102 @@
+---
+title: "Metadata"
+description: "The project exposes metadata or branding configuration."
+---
+
+# Metadata
+
+The project exposes metadata or branding configuration.
+## What This Is
+Metadata controls how the product presents itself to administrators. This usually includes title, theme, branding, and other non-functional settings that make the embedded experience feel native to the host application.
+## Why It Matters
+Metadata matters because it is part of how Root turns repository behavior into a usable developer or operator workflow. This page gives readers the mental model first, then uses implementation evidence as supporting context.
+## Core Concepts
+- title
+- theme
+- branding
+- labels
+- embedded experience
+## Typical Workflow
+1. Set product-facing metadata in the runtime configuration.
+2. Use branding options to match the host application without changing core behavior.
+3. Document which metadata is cosmetic and which affects routing or access.
+## Detailed Configuration Model
+Metadata controls behavior rather than UI copy. The important questions are what decision this configuration helps a developer make, what happens when it is absent, and what runtime behavior changes when it is enabled. This page keeps the mental model ahead of the raw files that mention the setting.
+
+For Root, configuration usually answers one of four questions: who can access the product, where it is mounted, how it talks to auth or database state, and what optional capabilities are enabled. Each setting is documented in relation to one of those questions.
+
+## Decision Points
+- Is the setting required for every installation, or only for a specific framework, adapter, or deployment mode?
+- Does the setting affect security, persistence, presentation, event tracking, or developer convenience?
+- What does a developer verify after changing it?
+
+## Success Criteria
+- Readers know when to configure this area and when they can ignore it.
+- Readers understand the consequence of a wrong value.
+- Readers can connect the setting to a visible product behavior or runtime integration.
+## Configuration Surface
+Configuration is easiest to understand when each setting is tied to the behavior it controls. The tables below collect the relevant files and environment variables after the mental model, so readers can connect the concept to the concrete setup surface.
+### Files
+- `demo/electron/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/expo/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/nextjs/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/oidc-client/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/stateless/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/adapter-factory/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/drizzle-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/kysely-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/memory-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/mongo-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/prisma-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/integration/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/integration/solid-vinxi/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/integration/test-utils/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/integration/vanilla-node/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+### Environment Variables
+- `APPDATA`
+- `AUTH_SECRET`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_TELEMETRY_ENDPOINT`
+- `DATABASE_URL`
+- `NODE_ENV`
+- `npm_config_user_agent`
+## How to Reason About This Config
+- Identify whether the option affects security, runtime mounting, data access, or presentation.
+- Prefer examples that use the same names and defaults found in the repository evidence.
+- Call out adapter-specific behavior instead of implying every setting applies to every framework.
+## Validation Checklist
+- Keep config examples aligned with source defaults and runtime validation.
+- Mention whether a setting is required, optional, or only needed for a specific adapter.
+- Update this page when config object names, env vars, or supported providers change.
+## Operational Notes
+- The concept comes before the file paths, so readers understand the workflow before they inspect implementation evidence.
+- Examples stay grounded in detected commands, config names, import paths, or behavior from the repository.
+- Maintainer details live in the reference section so the main page stays useful to product readers.
+- Required settings, optional settings, defaults, and adapter-specific behavior are separated clearly.
+- Security impact and validation expectations are called out before examples.
+## Maintainer Reference
+The sections above are the reader-facing explanation. The references below are for maintainers who need to verify or update the implementation behind this page.
+
+### Implementation Map
+- `demo/electron/package.json` - Evidence file that contributes to the implementation understanding for this page.
+- `demo/expo/package.json` - Evidence file that contributes to the implementation understanding for this page.
+- `demo/nextjs/package.json` - Evidence file that contributes to the implementation understanding for this page.
+- `demo/oidc-client/package.json` - Evidence file that contributes to the implementation understanding for this page.
+- `demo/stateless/package.json` - Evidence file that contributes to the implementation understanding for this page.
+- `docs/package.json` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/core/src/utils/fetch-metadata.test.ts` - Fetch Metadata.Test utility. It supports the feature behind the scenes and is often where shared rules live.
+- `packages/core/src/utils/fetch-metadata.ts` - Fetch Metadata utility. It supports the feature behind the scenes and is often where shared rules live.
+
+### Source Details
+- `packages/core/src/utils/fetch-metadata.ts`: language TypeScript; exports `isBrowserFetchRequest`
+
+### Evidence
+- `demo/electron/package.json`
+- `demo/expo/package.json`
+- `demo/nextjs/package.json`
+- `demo/oidc-client/package.json`
+- `demo/stateless/package.json`
+- `docs/package.json`
+- `packages/core/src/utils/fetch-metadata.test.ts`
+- `packages/core/src/utils/fetch-metadata.ts`
