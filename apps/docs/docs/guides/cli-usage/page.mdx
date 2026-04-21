@@ -1,0 +1,171 @@
+---
+title: "CLI Usage"
+description: "The project has a command line interface and documented runtime flags."
+order: 100
+---
+
+# CLI Usage
+
+The project has a command line interface and documented runtime flags.
+## What This Is
+CLI usage explains the command-line mental model: which commands exist, when to use each command, which flags affect runtime behavior, and how the CLI discovers project configuration.
+
+Repository context: Better Auth is a free and open source project licensed under the MIT License.  You are free to do whatever you want with it.
+## Why It Matters
+CLI Usage matters because it is part of how Root turns repository behavior into a usable developer or operator workflow. This page gives readers the mental model first, then uses implementation evidence as supporting context.
+## Core Concepts
+- commands
+- flags
+- config discovery
+- local development
+- standalone server
+## Typical Workflow
+1. Install or run the CLI from the host project root.
+2. Choose the command that matches the task, such as starting the studio or initializing config.
+3. Pass flags for port, host, config path, watch mode, or other runtime behavior when defaults do not match the app.
+## Detailed Guide Goal
+CLI Usage takes a reader from a known starting point to a useful end state. The guide is more than a command list: it explains when to use the workflow, what state the project needs before starting, what each step changes, and how to verify that the workflow succeeded.
+
+The guide is written for someone who wants to accomplish a task, not someone browsing the source code. Commands and flags appear as tools inside the workflow while the reader stays oriented around the goal.
+
+## When to Use This
+- Use this guide when a developer needs to perform the cli usage workflow from the project root or host application.
+- Use it when a maintainer needs to understand the intended operator or developer path before changing behavior.
+- Link to API or configuration pages only after the reader understands the task.
+
+## Success Criteria
+- The reader knows the prerequisite state.
+- The reader knows what command, action, or setting moves them forward.
+- The reader knows the expected result and how to verify it.
+## Before You Start
+- Install dependencies with `pnpm install`.
+- Confirm the main workflow with `pnpm dev`.
+- Review the maintainer reference before adding new examples.
+## Command Mental Model
+- `prepare` runs `lefthook install --reset-hooks-path` and supports the project workflow.
+- `build` runs `turbo build --filter=./packages/*` and creates the production build or compiled package artifacts.
+- `dev` runs `turbo dev --filter=./packages/* --filter=!./packages/cli` and starts the local development workflow.
+- `clean` runs `turbo clean --filter=./packages/* && rm -rf node_modules` and removes generated artifacts so the next build starts from a clean state.
+- `format` runs `biome format . --write` and checks or fixes code style before changes are shipped.
+- `format:md` runs `pnpm --filter docs format:md` and checks or fixes code style before changes are shipped.
+- `format:check` runs `pnpm --filter docs format:check` and checks or fixes code style before changes are shipped.
+- `lint` runs `biome check . --error-on-warnings` and checks or fixes code style before changes are shipped.
+- `lint:dependencies` runs `knip && knip --production` and checks or fixes code style before changes are shipped.
+- `lint:fix` runs `biome check . --fix --unsafe` and checks or fixes code style before changes are shipped.
+- `lint:spell` runs `cspell . --color` and checks or fixes code style before changes are shipped.
+- `lint:types` runs `turbo lint:types --filter=./packages/*` and checks or fixes code style before changes are shipped.
+- `lint:packages` runs `turbo lint:package --filter=./packages/*` and checks or fixes code style before changes are shipped.
+- `changeset` runs `changeset` and supports the project workflow.
+- `ci:version` runs `changeset version && pnpm install --no-frozen-lockfile` and supports the project workflow.
+- `ci:release` runs `turbo clean --filter=./packages/* && turbo build --filter=./packages/* && changeset publish` and prepares or publishes package releases.
+## Raw Commands and Flags
+- `prepare`: `lefthook install --reset-hooks-path`
+- `build`: `turbo build --filter=./packages/*`
+- `dev`: `turbo dev --filter=./packages/* --filter=!./packages/cli`
+- `clean`: `turbo clean --filter=./packages/* && rm -rf node_modules`
+- `format`: `biome format . --write`
+- `format:md`: `pnpm --filter docs format:md`
+- `format:check`: `pnpm --filter docs format:check`
+- `lint`: `biome check . --error-on-warnings`
+- `lint:dependencies`: `knip && knip --production`
+- `lint:fix`: `biome check . --fix --unsafe`
+- `lint:spell`: `cspell . --color`
+- `lint:types`: `turbo lint:types --filter=./packages/*`
+- `lint:packages`: `turbo lint:package --filter=./packages/*`
+- `changeset`: `changeset`
+- `ci:version`: `changeset version && pnpm install --no-frozen-lockfile`
+- `ci:release`: `turbo clean --filter=./packages/* && turbo build --filter=./packages/* && changeset publish`
+- `test`: `turbo test --continue --filter=./packages/* --filter=./test/*`
+- `coverage`: `turbo coverage --filter=./packages/* --filter=./test/*`
+- `postcoverage`: `pnpm coverage:collect && pnpm coverage:merge && pnpm coverage:report`
+- `coverage:merge`: `nyc merge coverage/raw coverage/merged/merged-coverage.json`
+- `coverage:collect`: `rm -rf coverage && mkdir -p coverage/raw && for f in $(find packages test -name coverage-final.json); do pkg=$(basename "$(dirname "$(dirname "$f")")"); cp "$f" "./coverage/raw/$pkg-coverage-final.json"; done`
+- `coverage:report`: `nyc --temp-dir=./coverage/raw report --reporter=lcov --reporter text-summary`
+- `coverage:open`: `open coverage/lcov-report/index.html`
+- `e2e:smoke`: `turbo e2e:smoke`
+- `e2e:integration`: `turbo e2e:integration`
+- `typecheck`: `tsc --build`
+- `typecheck:dist`: `tsc --project tsconfig.dist-check.json`
+- `--adapter`: flag is provided
+- `--args`: {"key":"value"}'`,
+- `--capabilities`
+- `--claude-code`: ) + chalk.gray("Add to Claude Code"),
+- `--config`: <config>",
+- `--copy`: flag to copy output to clipboard
+- `--cursor`: ) + chalk.gray("Add to Cursor
+- `--cwd`: <cwd>",
+- `--dev`: for dev dependencies",
+- `--dialect`: <dialect>",
+- `--force`: better-auth",
+- `--help`: to see all commands.\n",
+- `--json`: flag for JSON output
+- `--manual`: ) + chalk.gray("Manual configuration"),
+- `--open-code`: ) + chalk.gray("Add to Open Code
+- `--optional`: for optional dependencies",
+- `--output`: <output>", "the file to output to the generated schema
+- `--package-manager`: <package-manager>",
+- `--peer`: for peer dependencies",
+- `--provider`: <url> --capabilities <cap1> <cap2>",
+- `--registry-url`
+- `--save-catalog`: for catalog dependencies",
+- `--save-catalog-name`: ${name}
+- `--save-dev`: for dev dependencies",
+- `--save-optional`: for optional dependencies",
+- `--save-peer`
+- `--scope`: project",
+- `--skill`: ${skillName}
+- `--transport`: http better-auth ${REMOTE_MCP_URL}
+- `--version`
+- `--y`: is deprecated. Consider -y or --yes
+- `--yes`
+## Repository Notes
+These notes come from the repository README so the page stays grounded in existing project language.
+
+### Contribution
+Better Auth is a free and open source project licensed under the [MIT License](./LICENSE.md). You are free to do whatever you want with it.
+
+You could help continuing its development by:
+
+- [Contribute to the source code](./CONTRIBUTING.md)
+- [Suggest new features and report issues](https://github.com/better-auth/better-auth/issues)
+## Operational Notes
+- The concept comes before the file paths, so readers understand the workflow before they inspect implementation evidence.
+- Examples stay grounded in detected commands, config names, import paths, or behavior from the repository.
+- Maintainer details live in the reference section so the main page stays useful to product readers.
+- The guide stays task-oriented: prerequisite, action, expected result, verification.
+- Each command or option is connected to its reason before the raw command inventory appears.
+## Maintainer Reference
+The sections above are the reader-facing explanation. The references below are for maintainers who need to verify or update the implementation behind this page.
+
+### Implementation Map
+- `packages/cli/src/api.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/cli/src/commands/ai.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/cli/src/commands/generate.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/cli/src/commands/info.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/cli/src/commands/init/configs/databases.config.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/cli/src/commands/init/configs/frameworks.config.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/cli/src/commands/init/configs/social-providers.config.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/cli/src/commands/init/configs/temp-plugins.config.ts` - Evidence file that contributes to the implementation understanding for this page.
+
+### Source Details
+- `packages/cli/src/api.ts`: language TypeScript; exports `adapters`, `DBAdapter`, `generateDrizzleSchema`, `generateKyselySchema`, `generatePrismaSchema`, `generateSchema`
+- `packages/cli/src/commands/ai.ts`: language TypeScript; exports `ai`; env `APPDATA`; flags `--args`, `--capabilities`, `--help`, `--provider`, `--registry-url`, `--scope`
+- `packages/cli/src/commands/generate.ts`: language TypeScript; exports `generate`; flags `--adapter`, `--config`, `--cwd`, `--dialect`, `--output`, `--y`
+- `packages/cli/src/commands/info.ts`: language TypeScript; exports `info`; env `NODE_ENV`, `npm_config_user_agent`; flags `--config`, `--copy`, `--cwd`, `--json`
+- `packages/cli/src/commands/init/configs/databases.config.ts`: language TypeScript; exports `DatabaseAdapter`, `databasesConfig`, `DatabasesConfig`
+- `packages/cli/src/commands/init/configs/frameworks.config.ts`: language TypeScript; exports `Framework`, `FRAMEWORKS`
+- `packages/cli/src/commands/init/configs/social-providers.config.ts`: language TypeScript; exports `ProviderConfig`, `ProviderOption`, `SOCIAL_PROVIDER_CONFIGS`, `SOCIAL_PROVIDERS`, `SocialProvider`
+- `packages/cli/src/commands/init/configs/temp-plugins.config.ts`: language TypeScript; exports `Plugin`, `PluginConfig`, `PluginsConfig`, `tempPluginsConfig`
+
+### Evidence
+- `package.json:@arethetypeswrong/cli`
+- `package.json:@changesets/cli`
+- `packages/cli/src/api.ts`
+- `packages/cli/src/commands/ai.ts`
+- `packages/cli/src/commands/generate.ts`
+- `packages/cli/src/commands/info.ts`
+- `packages/cli/src/commands/init/configs/databases.config.ts`
+- `packages/cli/src/commands/init/configs/frameworks.config.ts`
+- `packages/cli/src/commands/init/configs/social-providers.config.ts`
+- `packages/cli/src/commands/init/configs/temp-plugins.config.ts`
+- `README.md#contribution`

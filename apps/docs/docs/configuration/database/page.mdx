@@ -1,0 +1,86 @@
+---
+title: "Database"
+description: "The repository includes database schema, migration, or adapter configuration evidence."
+order: 60
+---
+
+# Database
+
+The repository includes database schema, migration, or adapter configuration evidence.
+## What This Is
+Database documentation explains how the project connects to persistence, which schema or migration files matter, and what has to be ready before runtime features read or write state.
+## Why It Matters
+Database matters because it is part of how Root turns repository behavior into a usable developer or operator workflow. This page gives readers the mental model first, then uses implementation evidence as supporting context.
+## Core Concepts
+- database
+- schema
+- migrations
+- adapter
+- persistence
+## Typical Workflow
+1. Identify the database library, schema files, and migration files used by the project.
+2. Document required connection variables and migration steps.
+3. Explain which runtime features depend on the database being available.
+## Detailed Configuration Model
+Database controls behavior rather than UI copy. The important questions are what decision this configuration helps a developer make, what happens when it is absent, and what runtime behavior changes when it is enabled. This page keeps the mental model ahead of the raw files that mention the setting.
+
+For Root, configuration usually answers practical questions: who can access the product, where it is mounted, which runtime services it depends on, and what optional capabilities are enabled. Each setting is documented in relation to one of those questions.
+
+## Decision Points
+- Is the setting required for every installation, or only for a specific framework, adapter, or deployment mode?
+- Does the setting affect security, persistence, presentation, integrations, or developer convenience?
+- What does a developer verify after changing it?
+
+## Success Criteria
+- Readers know when to configure this area and when they can ignore it.
+- Readers understand the consequence of a wrong value.
+- Readers can connect the setting to a visible product behavior or runtime integration.
+## Configuration Surface
+Configuration is easiest to understand when each setting is tied to the behavior it controls. The tables below collect the relevant files and environment variables after the mental model, so readers can connect the concept to the concrete setup surface.
+### Files
+- `e2e/smoke/test/fixtures/cloudflare/drizzle.config.ts` (database) - Database schema or adapter configuration.
+- `e2e/adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/adapter-factory/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/drizzle-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/kysely-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/memory-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/mongo-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/prisma-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `packages/drizzle-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `packages/kysely-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `packages/memory-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `packages/mongo-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `packages/prisma-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+### Environment Variables
+- `APPDATA`
+- `AUTH_SECRET`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_TELEMETRY_ENDPOINT`
+- `DATABASE_URL`
+- `NODE_ENV`
+- `npm_config_user_agent`
+## How to Reason About This Config
+- Identify whether the option affects security, runtime mounting, data access, or presentation.
+- Prefer examples that use the same names and defaults found in the repository evidence.
+- Call out adapter-specific behavior instead of implying every setting applies to every framework.
+## Validation Checklist
+- Keep config examples aligned with source defaults and runtime validation.
+- Mention whether a setting is required, optional, or only needed for a specific adapter.
+- Update this page when config object names, env vars, or supported providers change.
+## Operational Notes
+- The concept comes before the file paths, so readers understand the workflow before they inspect implementation evidence.
+- Examples stay grounded in detected commands, config names, import paths, or behavior from the repository.
+- Maintainer details live in the reference section so the main page stays useful to product readers.
+- Required settings, optional settings, defaults, and adapter-specific behavior are separated clearly.
+- Security impact and validation expectations are called out before examples.
+## Maintainer Reference
+The sections above are the reader-facing explanation. The references below are for maintainers who need to verify or update the implementation behind this page.
+
+### Implementation Map
+- `e2e/smoke/test/fixtures/cloudflare/drizzle.config.ts` - Evidence file that contributes to the implementation understanding for this page.
+
+### Source Details
+No source-level declarations, routes, environment variables, or CLI flags were detected for these evidence files.
+
+### Evidence
+- `e2e/smoke/test/fixtures/cloudflare/drizzle.config.ts`

@@ -1,0 +1,95 @@
+---
+title: "Installation"
+description: "Install and configure Root."
+order: 20
+---
+
+# Installation
+
+This page explains how to get Root into a runnable state. It separates the setup model from the raw command inventory so readers understand what each step is preparing.
+## Setup Model
+Installation has three jobs: install the package dependencies, provide the runtime configuration the project expects, and verify the command that exercises the main workflow. If any of those steps are skipped, the application may install correctly but still fail when it tries to load database, adapter, environment-backed, or service-backed behavior.
+## What Gets Configured
+- Dependencies provide the framework, CLI, adapters, and runtime libraries used by the project.
+- Environment variables provide secrets, URLs, database connections, provider tokens, and deployment-specific behavior.
+- Scripts provide repeatable entrypoints for local development, production builds, tests, and release tasks.
+## Successful Setup Looks Like
+- Dependencies install with the package manager already used by the repository.
+- Required environment variables are present before runtime commands are executed.
+- The primary command starts, builds, or verifies the project without needing undocumented manual steps.
+## Install Dependencies
+Run `pnpm install` from the repository root.
+## Configure Environment Variables
+Copy `env.example` into `.env` and fill in the required values before running the project.
+- `APPDATA`
+- `AUTH_SECRET`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_TELEMETRY_ENDPOINT`
+- `DATABASE_URL`
+- `NODE_ENV`
+- `npm_config_user_agent`
+## Verify the Build or Runtime Command
+The most relevant command detected right now is `pnpm dev`.
+## Framework and Adapter Coverage
+- Gin
+- Next.js
+- SvelteKit
+## Configuration Files
+- `demo/electron/electron.vite.config.ts` (framework) - Vite application configuration.
+- `demo/electron/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/expo/components.json` (ui) - shadcn/ui component aliases and project structure.
+- `demo/expo/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/expo/src/lib/auth.ts` (product) - Product runtime configuration.
+- `demo/expo/tailwind.config.js` (styling) - Styling and CSS pipeline configuration.
+- `demo/nextjs/components.json` (ui) - shadcn/ui component aliases and project structure.
+- `demo/nextjs/lib/auth.ts` (product) - Product runtime configuration.
+- `demo/nextjs/next.config.ts` (framework) - Next.js application configuration.
+- `demo/nextjs/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/nextjs/postcss.config.mjs` (styling) - Styling and CSS pipeline configuration.
+- `demo/oidc-client/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/oidc-client/tailwind.config.ts` (styling) - Styling and CSS pipeline configuration.
+- `demo/oidc-client/vite.config.ts` (framework) - Vite application configuration.
+- `demo/stateless/next.config.ts` (framework) - Next.js application configuration.
+- `demo/stateless/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `demo/stateless/postcss.config.mjs` (styling) - Styling and CSS pipeline configuration.
+- `demo/stateless/src/lib/auth.ts` (product) - Product runtime configuration.
+- `demo/stateless/tailwind.config.ts` (styling) - Styling and CSS pipeline configuration.
+- `docker-compose.yml` (deployment) - Container or Docker Compose setup.
+- `docs/components.json` (ui) - shadcn/ui component aliases and project structure.
+- `docs/next.config.js` (framework) - Next.js application configuration.
+- `docs/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `docs/postcss.config.mjs` (styling) - Styling and CSS pipeline configuration.
+- `e2e/adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/adapter-factory/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/drizzle-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/kysely-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/memory-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+- `e2e/adapter/test/mongo-adapter/package.json` (package) - Package metadata, scripts, dependencies, and exports.
+## Current Script Inventory
+- `prepare`: `lefthook install --reset-hooks-path`
+- `build`: `turbo build --filter=./packages/*`
+- `dev`: `turbo dev --filter=./packages/* --filter=!./packages/cli`
+- `clean`: `turbo clean --filter=./packages/* && rm -rf node_modules`
+- `format`: `biome format . --write`
+- `format:md`: `pnpm --filter docs format:md`
+- `format:check`: `pnpm --filter docs format:check`
+- `lint`: `biome check . --error-on-warnings`
+- `lint:dependencies`: `knip && knip --production`
+- `lint:fix`: `biome check . --fix --unsafe`
+- `lint:spell`: `cspell . --color`
+- `lint:types`: `turbo lint:types --filter=./packages/*`
+- `lint:packages`: `turbo lint:package --filter=./packages/*`
+- `changeset`: `changeset`
+- `ci:version`: `changeset version && pnpm install --no-frozen-lockfile`
+- `ci:release`: `turbo clean --filter=./packages/* && turbo build --filter=./packages/* && changeset publish`
+- `test`: `turbo test --continue --filter=./packages/* --filter=./test/*`
+- `coverage`: `turbo coverage --filter=./packages/* --filter=./test/*`
+- `postcoverage`: `pnpm coverage:collect && pnpm coverage:merge && pnpm coverage:report`
+- `coverage:merge`: `nyc merge coverage/raw coverage/merged/merged-coverage.json`
+- `coverage:collect`: `rm -rf coverage && mkdir -p coverage/raw && for f in $(find packages test -name coverage-final.json); do pkg=$(basename "$(dirname "$(dirname "$f")")"); cp "$f" "./coverage/raw/$pkg-coverage-final.json"; done`
+- `coverage:report`: `nyc --temp-dir=./coverage/raw report --reporter=lcov --reporter text-summary`
+- `coverage:open`: `open coverage/lcov-report/index.html`
+- `e2e:smoke`: `turbo e2e:smoke`
+- `e2e:integration`: `turbo e2e:integration`
+- `typecheck`: `tsc --build`
+- `typecheck:dist`: `tsc --project tsconfig.dist-check.json`
