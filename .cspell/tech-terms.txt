@@ -58,3 +58,11 @@ GHEOF
 denoland
 zizmor
 zizmorcore
+IMDS
+WHATWG
+CIMD
+Oligo
+febf
+fdff
+fffe
+vbscript

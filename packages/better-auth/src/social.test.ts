@@ -260,6 +260,66 @@ describe("Social Providers", async (c) => {
 		});
 	});
 
+	/**
+	 * A built-in social callback that arrives without a `state` parameter must
+	 * redirect to the error page using the `error` query parameter the page
+	 * reads, not a `state` parameter the page ignores.
+	 *
+	 * @see https://github.com/better-auth/better-auth/issues/9215
+	 */
+	it("redirects a built-in callback with no state to error=state_not_found", async () => {
+		await client.$fetch("/callback/google", {
+			query: {
+				code: "test",
+			},
+			method: "GET",
+			onError(context) {
+				expect(context.response.status).toBe(302);
+				const location = context.response.headers.get("location") ?? "";
+				expect(location).toContain("error=state_not_found");
+				expect(location).not.toContain("state=state_not_found");
+			},
+		});
+	});
+
+	/**
+	 * When OAuth state validation fails, the redirect must honor the per-flow
+	 * `errorCallbackURL` the caller passed at sign-in, not the default error
+	 * page. The error URL is recoverable from the parsed state even when the
+	 * state-cookie check fails, and it was already origin-validated at sign-in.
+	 *
+	 * @see https://github.com/better-auth/better-auth/issues/5467
+	 */
+	it("redirects to the per-flow errorCallbackURL when state validation fails", async () => {
+		const headers = new Headers();
+		const signInRes = await client.signIn.social({
+			provider: "google",
+			callbackURL: "/callback",
+			errorCallbackURL: "/oauth-error",
+			fetchOptions: {
+				onSuccess: cookieSetter(headers),
+			},
+		});
+		const state = new URL(signInRes.data!.url!).searchParams.get("state") || "";
+
+		// Omit the state cookie so the signed-cookie check fails
+		// (state_security_mismatch) while the verification record still parses.
+		await client.$fetch("/callback/google", {
+			query: {
+				state,
+				code: "test",
+			},
+			method: "GET",
+			onError(context) {
+				expect(context.response.status).toBe(302);
+				const location = context.response.headers.get("location") ?? "";
+				expect(location).toContain("/oauth-error");
+				expect(location).toContain("error=state_mismatch");
+				expect(location).not.toContain("/api/auth/error");
+			},
+		});
+	});
+
 	it("should be able to sign in with async social provider", async () => {
 		const headers = new Headers();
 		const signInRes = await client.signIn.social({
@@ -991,6 +1051,195 @@ describe("updateAccountOnSignIn", async () => {
 			session2.data?.user.id!,
 		);
 		expect(userAccounts2[0]!.accessToken).toBe("new-access-token");
+	});
+});
+
+/**
+ * @see https://github.com/better-auth/better-auth/issues/4498
+ */
+describe("Google Provider — multiple client IDs", async () => {
+	const googleKeyPair = await generateKeyPair("RS256");
+	const googleJwk = await exportJWK(googleKeyPair.publicKey);
+	const googleKid = "test-google-kid";
+	googleJwk.kid = googleKid;
+	googleJwk.alg = "RS256";
+	googleJwk.use = "sig";
+
+	const webClientId = "123-web.googleusercontent.com";
+	const iosClientId = "456-ios.googleusercontent.com";
+	const androidClientId = "789-android.googleusercontent.com";
+
+	const signIdToken = (audience: string) =>
+		new SignJWT({
+			email: "mobile-user@example.com",
+			email_verified: true,
+			name: "Mobile User",
+			sub: "google-sub-999",
+		})
+			.setProtectedHeader({ alg: "RS256", kid: googleKid })
+			.setIssuedAt()
+			.setIssuer("https://accounts.google.com")
+			.setAudience(audience)
+			.setExpirationTime("1h")
+			.sign(googleKeyPair.privateKey);
+
+	beforeAll(() => {
+		mswServer.use(
+			http.get("https://www.googleapis.com/oauth2/v3/certs", async () =>
+				HttpResponse.json({ keys: [googleJwk] }),
+			),
+		);
+	});
+
+	it.each([
+		["web", webClientId],
+		["iOS", iosClientId],
+		["Android", androidClientId],
+	])("accepts an id token issued for the %s client", async (_, audience) => {
+		const idToken = await signIdToken(audience);
+		const { client } = await getTestInstance(
+			{
+				socialProviders: {
+					google: {
+						clientId: [webClientId, iosClientId, androidClientId],
+						clientSecret: "test-secret",
+					},
+				},
+			},
+			{ disableTestUser: true },
+		);
+
+		const res = await client.signIn.social({
+			provider: "google",
+			idToken: { token: idToken },
+		});
+
+		expect(res.data).toBeDefined();
+		expect(res.data!.redirect).toBe(false);
+		const data = res.data as { user: { email: string } };
+		expect(data.user.email).toBe("mobile-user@example.com");
+	});
+
+	it("rejects an id token whose audience is not configured", async () => {
+		const idToken = await signIdToken("999-unknown.googleusercontent.com");
+		const { client } = await getTestInstance(
+			{
+				socialProviders: {
+					google: {
+						clientId: [webClientId, iosClientId],
+						clientSecret: "test-secret",
+					},
+				},
+			},
+			{ disableTestUser: true },
+		);
+
+		const res = await client.signIn.social({
+			provider: "google",
+			idToken: { token: idToken },
+		});
+
+		expect(res.error?.status).toBe(401);
+	});
+
+	it("uses the first configured client id when building the authorization URL", async () => {
+		const { client } = await getTestInstance(
+			{
+				socialProviders: {
+					google: {
+						clientId: [webClientId, iosClientId, androidClientId],
+						clientSecret: "test-secret",
+					},
+				},
+			},
+			{ disableTestUser: true },
+		);
+
+		const signInRes = await client.signIn.social({
+			provider: "google",
+			callbackURL: "/callback",
+		});
+
+		expect(signInRes.data?.url).toContain(encodeURIComponent(webClientId));
+		expect(signInRes.data?.url).not.toContain(encodeURIComponent(iosClientId));
+	});
+
+	it("rejects an empty clientId array at sign-in time", async () => {
+		const { client } = await getTestInstance(
+			{
+				socialProviders: {
+					google: {
+						clientId: [],
+						clientSecret: "test-secret",
+					},
+				},
+			},
+			{ disableTestUser: true },
+		);
+
+		const res = await client.signIn.social({
+			provider: "google",
+			callbackURL: "/callback",
+		});
+
+		expect(res.error?.status).toBe(500);
+	});
+});
+
+/**
+ * @see https://github.com/better-auth/better-auth/issues/4498
+ */
+describe("Multi-client ID support — other widened providers", () => {
+	const appleConfig = {
+		clientId: ["apple-web", "apple-ios"],
+		clientSecret: "apple-secret",
+	};
+	const facebookConfig = {
+		clientId: ["fb-web", "fb-mobile"],
+		clientSecret: "fb-secret",
+	};
+	const cognitoConfig = {
+		clientId: ["cog-web", "cog-mobile"],
+		clientSecret: "cog-secret",
+		domain: "test.auth.us-east-1.amazoncognito.com",
+		region: "us-east-1",
+		userPoolId: "us-east-1_testpool",
+	};
+
+	it.each([
+		["apple", appleConfig, "apple-web"],
+		["facebook", facebookConfig, "fb-web"],
+		["cognito", cognitoConfig, "cog-web"],
+	] as const)("%s uses the first entry of the clientId array for the auth URL", async (provider, config, firstId) => {
+		const { client } = await getTestInstance(
+			{ socialProviders: { [provider]: config } },
+			{ disableTestUser: true },
+		);
+
+		const res = await client.signIn.social({
+			provider,
+			callbackURL: "/callback",
+		});
+
+		expect(res.data?.url).toContain(firstId);
+	});
+
+	it.each([
+		["apple", { ...appleConfig, clientId: [] as string[] }],
+		["facebook", { ...facebookConfig, clientId: [] as string[] }],
+		["cognito", { ...cognitoConfig, clientId: [] as string[] }],
+	] as const)("%s rejects an empty clientId array", async (provider, config) => {
+		const { client } = await getTestInstance(
+			{ socialProviders: { [provider]: config } },
+			{ disableTestUser: true },
+		);
+
+		const res = await client.signIn.social({
+			provider,
+			callbackURL: "/callback",
+		});
+
+		expect(res.error?.status).toBe(500);
 	});
 });
 
@@ -2014,6 +2263,27 @@ describe("Microsoft Provider", async () => {
 			idToken: { token: wrongIssuerToken },
 		});
 		expect(invalidRes.error?.status).toBe(401);
+	});
+
+	it("builds an authorization URL without clientSecret (public client)", async () => {
+		const { client } = await getTestInstance(
+			{
+				socialProviders: {
+					microsoft: {
+						clientId: "public-ms-client",
+					},
+				},
+			},
+			{ disableTestUser: true },
+		);
+
+		const res = await client.signIn.social({
+			provider: "microsoft",
+			callbackURL: "/callback",
+		});
+
+		expect(res.data?.url).toContain("public-ms-client");
+		expect(res.data?.redirect).toBe(true);
 	});
 });
 

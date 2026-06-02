@@ -567,6 +567,19 @@ export const verifyPhoneNumber = (opts: RequiredPhoneNumberOptions) =>
 							[opts.phoneNumberVerified]: true,
 						},
 					);
+				if (!user) {
+					throw APIError.from(
+						"INTERNAL_SERVER_ERROR",
+						BASE_ERROR_CODES.FAILED_TO_UPDATE_USER,
+					);
+				}
+				await opts?.callbackOnVerification?.(
+					{
+						phoneNumber: ctx.body.phoneNumber,
+						user,
+					},
+					ctx,
+				);
 				return ctx.json({
 					status: true,
 					token: session.session.token,
@@ -894,7 +907,7 @@ export const resetPasswordPhoneNumber = (opts: RequiredPhoneNumberOptions) =>
 			}
 
 			if (ctx.context.options.emailAndPassword?.revokeSessionsOnPasswordReset) {
-				await ctx.context.internalAdapter.deleteSessions(user.id);
+				await ctx.context.internalAdapter.deleteUserSessions(user.id);
 			}
 
 			return ctx.json({
