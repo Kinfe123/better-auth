@@ -1,0 +1,39 @@
+---
+title: "Kakao"
+description: "Kakao provider setup and usage."
+order: 12
+---
+
+# Kakao
+
+This guide covers adding Kakao sign-in to your Better Auth instance.
+
+## Get your credentials
+
+1. Open the [Kakao Developer Portal](https://developers.kakao.com) and create an application.
+2. Under **Kakao Login > Redirect URI**, add `http://localhost:3000/api/auth/callback/kakao` for local development.
+3. Copy your **REST API Key** (client ID) and the **Client Secret** from the security settings.
+
+The default scopes are `account_email`, `profile_image`, and `profile_nickname`. Note that `account_email` requires your app to complete **Biz App** (business verification) in the Kakao portal.
+
+## Configure the provider
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    kakao: {
+      clientId: process.env.KAKAO_CLIENT_ID as string,
+      clientSecret: process.env.KAKAO_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "kakao" })
+```

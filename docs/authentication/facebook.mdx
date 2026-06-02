@@ -1,0 +1,54 @@
+---
+title: "Facebook"
+description: "Facebook provider setup and usage."
+order: 6
+---
+
+# Facebook
+
+This guide shows you how to configure Facebook sign-in with Better Auth.
+
+## Get your credentials
+
+1. Open the [Facebook Developer Portal](https://developers.facebook.com/) and select your app (or create one).
+2. Go to **App Settings > Basic** and locate your **App ID** (this is your `clientId`) and **App Secret** (your `clientSecret`).
+3. Under **Facebook Login > Settings**, add `http://localhost:3000/api/auth/callback/facebook` as a valid OAuth redirect URI for local development.
+
+> **Warning:** Never expose `clientSecret` in client-side code.
+
+## Configure the provider
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    facebook: {
+      clientId: process.env.FACEBOOK_CLIENT_ID as string,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Custom scopes and fields
+
+By default, Better Auth requests `email` and `public_profile`. You can extend this:
+
+```ts
+facebook: {
+  clientId: process.env.FACEBOOK_CLIENT_ID as string,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+  scopes: ["email", "public_profile", "user_friends"],
+  fields: ["user_friends"],
+},
+```
+
+`scopes` overwrites the default scope list. `fields` extends the list of profile fields retrieved from the Facebook user-info endpoint (default: `id`, `name`, `email`, `picture`).
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "facebook" })
+```

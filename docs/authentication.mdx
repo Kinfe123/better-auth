@@ -1,0 +1,75 @@
+---
+title: "Authentication"
+description: "Authentication methods, flows, and social providers available in Better Auth."
+order: 0
+---
+
+# Authentication
+
+Better Auth ships built-in support for email/password authentication and a broad set of social OAuth providers. You configure providers in your `betterAuth` instance on the server, then call the matching client method to trigger the flow.
+
+## Email and password
+
+Enable email and password sign-in by setting `emailAndPassword.enabled` to `true` in your auth config. This unlocks `signUp.email`, `signIn.email`, password reset, and email verification on both the server and client.
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+  },
+})
+```
+
+## Social providers
+
+Social sign-in is configured through the `socialProviders` key. Each provider takes a `clientId` and `clientSecret` you obtain from the provider's developer portal. The callback URL for every provider follows the pattern `/api/auth/callback/<provider>`.
+
+```ts
+export const auth = betterAuth({
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+On the client, trigger any social flow with `signIn.social`:
+
+```ts
+await authClient.signIn.social({ provider: "google" })
+```
+
+## Supported providers
+
+Better Auth includes first-class support for the following providers. Each has its own setup page with credential instructions and any provider-specific options.
+
+- [Apple](/docs/authentication/apple) — requires a `.p8` key and JWT-based client secret
+- [Atlassian](/docs/authentication/atlassian)
+- [Amazon Cognito](/docs/authentication/cognito)
+- [Discord](/docs/authentication/discord)
+- [Dropbox](/docs/authentication/dropbox)
+- [Facebook](/docs/authentication/facebook)
+- [Figma](/docs/authentication/figma)
+- [GitHub](/docs/authentication/github)
+- [GitLab](/docs/authentication/gitlab)
+- Google
+- [Hugging Face](/docs/authentication/huggingface)
+- [Kakao](/docs/authentication/kakao)
+- [Kick](/docs/authentication/kick)
+- [LINE](/docs/authentication/line)
+- [Linear](/docs/authentication/linear)
+- [Microsoft](/docs/authentication/microsoft)
+- [Naver](/docs/authentication/naver)
+- [Notion](/docs/authentication/notion)
+- [Paybin](/docs/authentication/paybin)
+- [Other providers via Generic OAuth](/docs/authentication/other-social-providers)
+
+For providers not listed here — including Auth0, Keycloak, Okta, Slack, and any custom OAuth2 or OIDC server — see [Other Social Providers](/docs/authentication/other-social-providers).

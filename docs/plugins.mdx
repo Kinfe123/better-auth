@@ -1,0 +1,53 @@
+---
+title: "Plugins"
+description: "Extend Better Auth with official plugins for 2FA, organizations, API keys, magic links, and more."
+order: 0
+---
+
+# Plugins
+
+Better Auth's plugin system lets you add advanced authentication and authorization capabilities by registering one or more plugins in your `betterAuth` configuration. Each plugin extends both the server instance and the client with new routes, methods, and types — no manual wiring needed.
+
+## Adding a plugin
+
+Plugins are passed to the `plugins` array in your auth config. The corresponding client plugin (if any) goes in the `plugins` array of `createAuthClient`:
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+import { twoFactor } from "better-auth/plugins"
+
+export const auth = betterAuth({
+  plugins: [twoFactor()],
+})
+```
+
+```ts
+// lib/auth-client.ts
+import { createAuthClient } from "better-auth/client"
+import { twoFactorClient } from "better-auth/client/plugins"
+
+export const authClient = createAuthClient({
+  plugins: [twoFactorClient()],
+})
+```
+
+## Available plugins
+
+Better Auth ships the following official plugins:
+
+- **Two Factor (2FA)** — TOTP-based two-factor authentication with backup code support.
+- **Organization** — Multi-tenant organization management with members, teams, roles, and invitations.
+- **Admin** — User management endpoints and role-based access control for admin users.
+- **Magic Link** — Passwordless sign-in via email magic links.
+- **Email OTP** — One-time password sign-in delivered by email.
+- **Phone Number** — Phone number verification using OTP via SMS.
+- **Anonymous** — Let users start a session without an account, then upgrade later.
+- **API Key** — Issue and validate API keys that map back to a user or organization.
+- **JWT** — Issue JWTs for services that can't use the session cookie.
+- **OIDC Provider** — Turn your app into an OpenID Connect provider.
+- **Bearer** — Accept Bearer token authorization on server endpoints.
+- **Username** — Add username-based sign-in alongside email/password.
+- **Generic OAuth** — Configure any OAuth2 or OIDC provider not natively supported.
+
+See [Open API](/docs/plugins/open-api) for a concrete plugin setup example.

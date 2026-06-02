@@ -1,0 +1,60 @@
+---
+title: "Microsoft"
+description: "Microsoft provider setup and usage."
+order: 16
+---
+
+# Microsoft
+
+Better Auth supports Microsoft sign-in via Azure Entra ID (formerly Active Directory). This lets users authenticate with any Microsoft account — personal or organizational.
+
+## Get your credentials
+
+1. Open the [Microsoft Entra ID portal](https://portal.azure.com/) and register a new application.
+2. Under **Authentication**, add `http://localhost:3000/api/auth/callback/microsoft` as a redirect URI for local development.
+3. Under **Certificates & secrets**, create a new client secret and copy the value immediately.
+4. Copy the **Application (client) ID** and your **Directory (tenant) ID** from the Overview page.
+
+## Configure the provider
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    microsoft: {
+      clientId: process.env.MS_APP_ID as string,
+      clientSecret: process.env.MS_CLIENT_SECRET as string,
+      tenantId: process.env.MS_TENANT_ID as string, // omit for multi-tenant
+    },
+  },
+})
+```
+
+## Email claim and identity anchoring
+
+Entra ID does not emit the `email` claim for managed users by default. The email value is also tenant-mutable and not verified by Microsoft, so it must not be used for authorization decisions. Use `profile.oid` (plus `profile.tid` when correlating across tenants) as the stable identity anchor. Request `email` as an optional claim in your app manifest if needed.
+
+## Large profile images
+
+Microsoft returns profile images as base64-encoded strings, which can exceed HTTP header limits. Use `mapProfileToUser` to upload the image to your own storage or discard it:
+
+```ts
+microsoft: {
+  clientId: process.env.MS_APP_ID as string,
+  clientSecret: process.env.MS_CLIENT_SECRET as string,
+  mapProfileToUser: (profile) => ({
+    image: null, // discard the base64 image
+  }),
+},
+```
+
+## Sign in
+
+```ts
+await authClient.signIn.social({
+  provider: "microsoft",
+  callbackURL: "/dashboard",
+})
+```

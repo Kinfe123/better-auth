@@ -1,0 +1,73 @@
+---
+title: "Apple"
+description: "Apple provider setup and usage."
+order: 1
+---
+
+# Apple
+
+Sign In with Apple uses a JWT-based client secret instead of a static string. You generate the secret from a `.p8` private key you download from the Apple Developer Portal, combined with your Team ID and Key ID.
+
+## Get your credentials
+
+1. In the Apple Developer Portal, go to **Certificates, Identifiers & Profiles**.
+2. Create an **App ID** with Sign In with Apple enabled.
+3. Create a **Service ID** — this becomes your `clientId`. Add the domain and set the return URL to `https://yourdomain.com/api/auth/callback/apple`.
+4. Under **Keys**, create a new key with Sign In with Apple enabled. Download the `.p8` file immediately — it's only available once. Note the Key ID and your Team ID.
+
+> **Warning:** Apple Sign In does not support `localhost` or non-HTTPS URLs. You must use a domain with a valid TLS certificate during development (e.g., a tunnel service).
+
+## Generate the client secret
+
+Apple requires a signed JWT as the client secret. Use the `jose` library to generate it:
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+import { importPKCS8, SignJWT } from "jose"
+
+async function generateAppleClientSecret(
+  clientId: string,
+  teamId: string,
+  keyId: string,
+  privateKey: string
+) {
+  const key = await importPKCS8(privateKey, "ES256")
+  const now = Math.floor(Date.now() / 1000)
+  return new SignJWT({})
+    .setProtectedHeader({ alg: "ES256", kid: keyId })
+    .setIssuer(teamId)
+    .setSubject(clientId)
+    .setAudience("https://appleid.apple.com")
+    .setIssuedAt(now)
+    .setExpirationTime(now + 180 * 24 * 60 * 60)
+    .sign(key)
+}
+
+export const auth = betterAuth({
+  trustedOrigins: ["https://appleid.apple.com"],
+  socialProviders: {
+    apple: {
+      clientId: process.env.APPLE_CLIENT_ID as string,
+      clientSecret: await generateAppleClientSecret(
+        process.env.APPLE_CLIENT_ID as string,
+        process.env.APPLE_TEAM_ID as string,
+        process.env.APPLE_KEY_ID as string,
+        process.env.APPLE_PRIVATE_KEY as string
+      ),
+    },
+  },
+})
+```
+
+You must add `https://appleid.apple.com` to `trustedOrigins` so Better Auth accepts the POST callback Apple sends to your server.
+
+## Email availability
+
+Apple emits the `email` claim only on the very first authorization. Every subsequent sign-in omits it and Apple provides no user-info endpoint. Persist the email the first time and use `mapProfileToUser` as a fallback strategy.
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "apple" })
+```

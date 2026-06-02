@@ -1,0 +1,37 @@
+---
+title: "GitLab"
+description: "GitLab provider setup and usage."
+order: 9
+---
+
+# GitLab
+
+This guide shows you how to add GitLab OAuth sign-in to your Better Auth instance.
+
+## Get your credentials
+
+Create an OAuth application in GitLab following the [GitLab OAuth documentation](https://docs.gitlab.com/ee/api/oauth2.html). Set the redirect URL to `http://localhost:3000/api/auth/callback/gitlab` for local development and to your production domain for live environments.
+
+## Configure the provider
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    gitlab: {
+      clientId: process.env.GITLAB_CLIENT_ID as string,
+      clientSecret: process.env.GITLAB_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+If you're using a self-hosted GitLab instance, you can provide a custom `issuer` URL pointing to your instance.
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "gitlab" })
+```

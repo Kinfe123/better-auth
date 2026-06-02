@@ -1,0 +1,77 @@
+---
+title: "Other Social Providers"
+description: "Configure any OAuth2 or OIDC provider using the Generic OAuth plugin."
+order: 19
+---
+
+# Other Social Providers
+
+Better Auth supports any provider that implements OAuth2 or OpenID Connect through the Generic OAuth plugin. You can use pre-configured helper functions for popular providers like Auth0, Keycloak, Okta, Microsoft Entra ID, and Slack, or manually configure any OAuth2 or OIDC server by pointing to its discovery URL.
+
+## Install the plugin
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+import { genericOAuth } from "better-auth/plugins"
+
+export const auth = betterAuth({
+  plugins: [
+    genericOAuth({
+      config: [
+        {
+          providerId: "my-provider",
+          clientId: "replace-me",
+          clientSecret: "your-secret-value",
+          discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+        },
+      ],
+    }),
+  ],
+})
+```
+
+Add the client plugin as well:
+
+```ts
+// lib/auth-client.ts
+import { createAuthClient } from "better-auth/client"
+import { genericOAuthClient } from "better-auth/client/plugins"
+
+export const authClient = createAuthClient({
+  plugins: [genericOAuthClient()],
+})
+```
+
+## Using pre-configured providers
+
+Better Auth ships helper functions for common providers. Here's an example with Slack:
+
+```ts
+import { betterAuth } from "better-auth"
+import { genericOAuth, slack } from "better-auth/plugins"
+
+export const auth = betterAuth({
+  plugins: [
+    genericOAuth({
+      config: [
+        slack({
+          clientId: process.env.SLACK_CLIENT_ID,
+          clientSecret: process.env.SLACK_CLIENT_SECRET,
+        }),
+      ],
+    }),
+  ],
+})
+```
+
+Then trigger sign-in using `signIn.oauth2` with the `providerId` you configured:
+
+```ts
+await authClient.signIn.oauth2({
+  providerId: "slack",
+  callbackURL: "/dashboard",
+})
+```
+
+The same pattern works for Auth0, Keycloak, Okta, and other pre-configured providers in the Generic OAuth plugin.
