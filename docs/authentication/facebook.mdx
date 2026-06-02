@@ -1,0 +1,57 @@
+---
+title: "Facebook"
+description: "Facebook provider setup and usage."
+order: 6
+---
+
+# Facebook
+
+This page covers getting your Facebook OAuth credentials and configuring the Facebook provider in Better Auth.
+
+## Get your credentials
+
+1. Open the [Facebook Developer Portal](https://developers.facebook.com/) and select your app.
+2. Navigate to **App Settings → Basic**.
+3. Copy the **App ID** (your `clientId`) and **App Secret** (your `clientSecret`).
+4. Set the redirect URL to `http://localhost:3000/api/auth/callback/facebook` for local development.
+
+> **Note:** Never expose your `clientSecret` in client-side code.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    facebook: {
+      clientId: process.env.FACEBOOK_CLIENT_ID as string,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "facebook" })
+```
+
+## Custom scopes and fields
+
+By default, Better Auth requests the `email` and `public_profile` scopes. You can override scopes and extend the profile fields:
+
+```ts
+facebook: {
+  clientId: process.env.FACEBOOK_CLIENT_ID as string,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+  scopes: ["email", "public_profile", "user_friends"],
+  fields: ["user_friends"],
+}
+```
+
+The `fields` option extends the default field list (`id`, `name`, `email`, `picture`). The `scopes` option replaces the defaults entirely.

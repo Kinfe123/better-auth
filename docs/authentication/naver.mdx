@@ -1,0 +1,39 @@
+---
+title: "Naver"
+description: "Naver provider setup and usage."
+order: 17
+---
+
+# Naver
+
+This page covers setting up Naver OAuth in Better Auth.
+
+## Get your credentials
+
+1. Open [Naver Developers](https://developers.naver.com/) and create an application.
+2. Set the redirect URL to `http://localhost:3000/api/auth/callback/naver` for local development.
+3. Copy the **Client ID** and **Client Secret**.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    naver: {
+      clientId: process.env.NAVER_CLIENT_ID as string,
+      clientSecret: process.env.NAVER_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "naver" })
+```

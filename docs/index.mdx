@@ -1,0 +1,13 @@
+---
+title: "Introduction"
+description: "The most comprehensive authentication framework for TypeScript."
+order: 0
+---
+
+# Introduction
+
+Better Auth is a framework-agnostic authentication and authorization framework for TypeScript. It gives you a production-ready auth layer — email/password, social login, two-factor, organizations, API keys, and more — without locking you into a runtime or a specific framework. It runs on Next.js, SvelteKit, SolidStart, TanStack Start, and any platform that speaks standard web APIs.
+
+The core primitive is `betterAuth()`, a single configuration object that wires together your database adapter, social providers, and plugins. The same instance serves your server-side API and powers the typed client you import in your UI code. A plugin ecosystem means you can add capabilities like 2FA, multi-tenant organizations, JWT auth, or magic links with a few lines of config rather than weeks of custom code.
+
+If you're starting fresh, head to [Quickstart](/docs/quickstart) for a working example in under five minutes. If you want to understand what adapters and plugins are available before you configure anything, read [Installation](/docs/installation) first. Once you're set up, the [Authentication](/docs/authentication) section covers every social provider, and the [Plugins](/docs/plugins) section covers the optional capabilities you can layer in.

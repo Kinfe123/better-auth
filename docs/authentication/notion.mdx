@@ -1,0 +1,42 @@
+---
+title: "Notion"
+description: "Notion provider setup and usage."
+order: 18
+---
+
+# Notion
+
+This page covers setting up Notion OAuth in Better Auth.
+
+## Get your credentials
+
+1. Open the [Notion Developers Portal](https://www.notion.so/my-integrations) and create a new integration.
+2. Under **OAuth Domain & URIs**, set the redirect URL to `http://localhost:3000/api/auth/callback/notion` for local development.
+3. Enable the **Read user information including email addresses** capability.
+4. Copy the **OAuth client ID** and **OAuth client secret**.
+
+> **Note:** For user authentication across different workspaces, create a **public** integration rather than an internal one.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    notion: {
+      clientId: process.env.NOTION_CLIENT_ID as string,
+      clientSecret: process.env.NOTION_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "notion" })
+```

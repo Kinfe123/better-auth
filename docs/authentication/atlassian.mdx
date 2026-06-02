@@ -1,0 +1,44 @@
+---
+title: "Atlassian"
+description: "Atlassian provider setup and usage."
+order: 2
+---
+
+# Atlassian
+
+This page covers setting up Atlassian OAuth so your users can sign in with their Atlassian account.
+
+## Get your credentials
+
+1. Sign in to your Atlassian account and open the [Atlassian Developer Console](https://developer.atlassian.com/console/myapps/).
+2. Click **Create new app** and fill in the app details.
+3. Under your app's settings, configure the redirect URI: `https://yourdomain.com/api/auth/callback/atlassian`.
+4. Note your **Client ID** and **Client Secret**.
+
+The default scope is `read:jira-user` and `offline_access`. For additional scopes, refer to the Atlassian OAuth documentation.
+
+> **Note:** The redirect URI must match exactly. If you change the base path of your auth routes, update the redirect URI in the Atlassian Developer Console accordingly.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    atlassian: {
+      clientId: process.env.ATLASSIAN_CLIENT_ID as string,
+      clientSecret: process.env.ATLASSIAN_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "atlassian" })
+```
