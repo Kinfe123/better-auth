@@ -1,0 +1,48 @@
+---
+title: "Authentication"
+description: "Authentication methods, flows, and social providers available in Better Auth."
+order: 0
+---
+
+# Authentication
+
+Better Auth supports several authentication strategies out of the box. You can mix and match them by enabling them in your `betterAuth` config — no separate packages required for the core strategies.
+
+## Email and Password
+
+Enable email/password authentication by setting `emailAndPassword.enabled` to `true` in your config:
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+  },
+});
+```
+
+Once enabled, users can sign up and sign in using `authClient.signUp.email` and `authClient.signIn.email`. Password reset, email verification, and account linking all work with this strategy.
+
+## Social Providers
+
+Social sign-in is configured through the `socialProviders` option. Each provider takes a `clientId` and `clientSecret` from the corresponding developer portal. For example, to add Google:
+
+```ts
+export const auth = betterAuth({
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    },
+  },
+});
+```
+
+The redirect URL pattern for every social provider is `https://yourdomain.com/api/auth/callback/<provider>`. Register this URL in each provider's developer portal before testing.
+
+Better Auth ships built-in support for: Apple, Atlassian, Cognito, Discord, Dropbox, Facebook, Figma, GitHub, GitLab, Google, Hugging Face, Kakao, Kick, LINE, Linear, LinkedIn, Microsoft, Naver, Notion, Paybin, PayPal, Polar, Railway, Reddit, Roblox, Salesforce, and more. Select a provider from the sidebar to see its specific credential setup and configuration options.
+
+## Other OAuth Providers
+
+For providers not listed above, the Generic OAuth plugin supports any OAuth 2.0 or OpenID Connect provider. See [Other Social Providers](/docs/authentication/other-social-providers) for configuration details.

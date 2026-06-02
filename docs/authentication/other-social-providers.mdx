@@ -1,0 +1,81 @@
+---
+title: "Other Social Providers"
+description: "Connect any OAuth 2.0 or OIDC provider using the Generic OAuth plugin."
+order: 8
+---
+
+# Other Social Providers
+
+Better Auth supports any provider that implements OAuth 2.0 or OpenID Connect through the Generic OAuth plugin. You can use pre-configured helper functions for popular providers like Auth0, Keycloak, Okta, Microsoft Entra ID, and Slack, or manually configure any provider.
+
+## Installation
+
+Add the Generic OAuth plugin to your auth config:
+
+```ts
+import { betterAuth } from "better-auth";
+import { genericOAuth } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  plugins: [
+    genericOAuth({
+      config: [
+        {
+          providerId: "my-provider",
+          clientId: "replace-me",
+          clientSecret: "your-secret-value",
+          discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+        },
+      ],
+    }),
+  ],
+});
+```
+
+Add the client plugin to your auth client:
+
+```ts
+import { createAuthClient } from "better-auth/client";
+import { genericOAuthClient } from "better-auth/client/plugins";
+
+export const authClient = createAuthClient({
+  plugins: [genericOAuthClient()],
+});
+```
+
+## Pre-configured providers
+
+Better Auth ships helper functions for popular providers. Here's how to add Slack in two lines:
+
+```ts
+import { betterAuth } from "better-auth";
+import { genericOAuth, slack } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  plugins: [
+    genericOAuth({
+      config: [
+        slack({
+          clientId: process.env.SLACK_CLIENT_ID!,
+          clientSecret: process.env.SLACK_CLIENT_SECRET!,
+        }),
+      ],
+    }),
+  ],
+});
+```
+
+Then trigger sign-in from the client:
+
+```ts
+await authClient.signIn.oauth2({
+  providerId: "slack",
+  callbackURL: "/dashboard",
+});
+```
+
+The same pattern applies to Auth0, Keycloak, Okta, and other pre-configured providers that ship with the plugin.
+
+## Environment variables for built-in providers
+
+When using the pre-configured helpers, each provider reads credentials from dedicated environment variables. For example, Auth0 reads `AUTH0_CLIENT_ID`, `AUTH0_CLIENT_SECRET`, and `AUTH0_DOMAIN`. Keycloak reads `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_CLIENT_SECRET`, and `KEYCLOAK_ISSUER`.

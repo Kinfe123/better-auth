@@ -1,0 +1,45 @@
+---
+title: "Plugins"
+description: "Extend Better Auth with optional plugins for two-factor auth, organizations, magic links, and more."
+order: 0
+---
+
+# Plugins
+
+Better Auth's plugin system lets you add advanced authentication and authorization features without changing your core setup. Each plugin is a self-contained module: you add it to the `plugins` array in your `betterAuth` config on the server, and pair it with a client plugin where the feature needs a browser-facing API.
+
+Here's what adding the two-factor plugin looks like:
+
+```ts
+import { betterAuth } from "better-auth";
+import { twoFactor } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  plugins: [
+    twoFactor(),
+  ],
+});
+```
+
+Most plugins also add tables to your database schema. After adding a plugin, run `npx better-auth migrate` (or `generate` for your ORM) to apply the new schema.
+
+## Available plugins
+
+Better Auth ships with the following plugins:
+
+- **Admin** — User management, role assignment, and impersonation for admin-level operations.
+- **Organization** — Multi-tenant organizations with teams, member roles, and invitation flows.
+- **Two Factor** — TOTP-based 2FA with backup codes.
+- **Magic Link** — Passwordless sign-in via email links.
+- **Email OTP** — One-time password authentication over email.
+- **Phone Number** — Phone number registration and SMS OTP verification.
+- **Anonymous** — Let users explore your app before creating an account, then link it later.
+- **Username** — Add username-based sign-in alongside email/password.
+- **Bearer** — Accept Bearer tokens for API authentication.
+- **JWT** — Issue JWTs for services that can't use session cookies.
+- **OIDC Provider** — Turn your app into an OpenID Connect identity provider.
+- **Generic OAuth** — Connect any OAuth 2.0 or OIDC provider.
+- **API Key** — Issue and validate long-lived API keys for programmatic access.
+- **Open API** — Auto-generate an OpenAPI reference for all Better Auth endpoints.
+
+See [Open API](/docs/plugins/open-api) for details on generating interactive documentation for your auth endpoints.

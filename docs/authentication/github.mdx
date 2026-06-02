@@ -1,0 +1,53 @@
+---
+title: "GitHub"
+description: "GitHub provider setup and usage."
+order: 2
+---
+
+# GitHub
+
+This page covers how to create a GitHub OAuth application, configure it in Better Auth, and sign users in.
+
+## Get your GitHub credentials
+
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers) and click **New OAuth App** (or **New GitHub App**).
+2. Set the **Authorization callback URL** to `http://localhost:3000/api/auth/callback/github` for local development. Use your production domain for production.
+3. Copy the **Client ID** and generate a **Client Secret**.
+
+> **Important:** If you create a GitHub App (not an OAuth App), you must grant **Email addresses: Read-only** permission under *Permissions and Events → Account Permissions*. Without this, sign-in returns an `email_not_found` error.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
+  },
+});
+```
+
+## Sign in with GitHub
+
+```ts
+import { createAuthClient } from "better-auth/client";
+
+const authClient = createAuthClient();
+
+await authClient.signIn.social({
+  provider: "github",
+  callbackURL: "/dashboard",
+});
+```
+
+### Refresh tokens
+
+GitHub OAuth Apps do not issue refresh tokens. Access tokens remain valid until the user or app revokes them, or they go unused for a year. This is expected behavior — no additional refresh logic is needed.
+
+### Users with private emails
+
+If a user sets their primary email to private on GitHub, `GET /user` returns `email: null`. Use `mapProfileToUser` to handle this case and fall back to an alternative identifier.

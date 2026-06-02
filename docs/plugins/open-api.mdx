@@ -1,0 +1,37 @@
+---
+title: "Open API"
+description: "Auto-generate an interactive OpenAPI reference for all Better Auth endpoints."
+order: 1
+---
+
+# Open API
+
+> **Note:** This plugin is in active development. Some endpoint metadata and schema descriptions may be incomplete.
+
+## Add the plugin
+
+```ts
+import { betterAuth } from "better-auth";
+import { openAPI } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  plugins: [
+    openAPI(),
+  ],
+});
+```
+
+Once added, navigate to `/api/auth/reference` in your running application to view the reference. Core endpoints appear under the **Default** group. Each plugin's endpoints are grouped under the plugin name. Model schemas are grouped under **Models**.
+
+## Get the raw schema
+
+To retrieve the OpenAPI 3.0 JSON schema programmatically — for example, to pipe it into a code generator — call `auth.api.generateOpenAPISchema()`:
+
+```ts
+import { auth } from "@/lib/auth";
+
+const schema = await auth.api.generateOpenAPISchema();
+console.log(JSON.stringify(schema, null, 2));
+```
+
+This returns a standard OpenAPI 3.0 object you can use with any compatible tooling: Swagger UI, Redoc, code generators, or Scalar's multi-source configuration.

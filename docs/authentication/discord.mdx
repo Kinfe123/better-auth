@@ -1,0 +1,62 @@
+---
+title: "Discord"
+description: "Discord provider setup and usage."
+order: 3
+---
+
+# Discord
+
+This page covers how to set up a Discord OAuth application and configure it in Better Auth.
+
+## Get your Discord credentials
+
+1. Go to the [Discord Developer Portal](https://discord.com/developers/applications) and create a new application.
+2. Under **OAuth2 → Redirects**, add `http://localhost:3000/api/auth/callback/discord` for local development.
+3. Copy the **Client ID** and **Client Secret** from the OAuth2 page.
+
+> **Note:** Discord returns `email: null` for phone-number-only accounts. Plan your user onboarding flow accordingly.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+    },
+  },
+});
+```
+
+## Sign in with Discord
+
+```ts
+import { createAuthClient } from "better-auth/client";
+
+const authClient = createAuthClient();
+
+await authClient.signIn.social({
+  provider: "discord",
+});
+```
+
+## Bot permissions (optional)
+
+If you add the `bot` scope to your Discord OAuth flow, you can set bitwise permission values on the provider config:
+
+```ts
+export const auth = betterAuth({
+  socialProviders: {
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+      permissions: 2048 | 16384, // Send Messages + Embed Links
+    },
+  },
+});
+```
+
+The `permissions` parameter only takes effect when the `bot` scope is requested.
