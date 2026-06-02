@@ -1,0 +1,45 @@
+---
+title: "GitHub"
+description: "GitHub provider setup and usage."
+order: 8
+---
+
+# GitHub
+
+This page covers getting your GitHub OAuth credentials and wiring them into Better Auth. There is one critical step for GitHub Apps that is easy to miss.
+
+## Get your credentials
+
+1. Open the [GitHub Developer Settings](https://github.com/settings/developers) and create an OAuth App or GitHub App.
+2. Set the redirect URL to `http://localhost:3000/api/auth/callback/github` for local development.
+3. Copy the **Client ID** and **Client Secret**.
+
+**If you are using a GitHub App:** Go to *Permissions and Events → Account Permissions → Email Addresses* and set it to **Read-only**. Without this, the `email_not_found` error will occur for users whose primary email is private.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "github" })
+```
+
+## Refresh tokens
+
+GitHub does not issue refresh tokens for OAuth Apps. Access tokens remain valid until the user or app revokes them, or until they go unused for a year. You do not need to handle token refresh for standard GitHub OAuth.

@@ -1,0 +1,81 @@
+---
+title: "Apple"
+description: "Apple provider setup and usage."
+order: 1
+---
+
+# Apple
+
+This page covers getting your Apple OAuth credentials and wiring them into your Better Auth config. Apple Sign In has a few unique requirements — a generated JWT client secret and mandatory HTTPS — so read through before you start.
+
+## Get your credentials
+
+You need an active Apple Developer account. In the Apple Developer Portal:
+
+1. Go to **Certificates, Identifiers & Profiles** → **Identifiers** and create an **App ID** with the Sign In with Apple capability enabled.
+2. Create a **Service ID** under the same identifier, enable Sign In with Apple, and set your return URL to `https://yourdomain.com/api/auth/callback/apple`.
+3. Under **Keys**, create a new key with Sign In with Apple enabled. Download the `.p8` file immediately — it is only available once. Note the **Key ID** and your **Team ID**.
+
+## Generate the client secret
+
+Apple requires a signed JWT as the client secret. Generate it with the `jose` library:
+
+```ts
+import { importPKCS8, SignJWT } from "jose"
+
+async function generateAppleClientSecret(
+  clientId: string,
+  teamId: string,
+  keyId: string,
+  privateKey: string
+) {
+  const key = await importPKCS8(privateKey, "ES256")
+  const now = Math.floor(Date.now() / 1000)
+  return new SignJWT({})
+    .setProtectedHeader({ alg: "ES256", kid: keyId })
+    .setIssuer(teamId)
+    .setSubject(clientId)
+    .setAudience("https://appleid.apple.com")
+    .setIssuedAt(now)
+    .setExpirationTime(now + 180 * 24 * 60 * 60)
+    .sign(key)
+}
+```
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    apple: {
+      clientId: process.env.APPLE_CLIENT_ID as string,
+      clientSecret: await generateAppleClientSecret(
+        process.env.APPLE_CLIENT_ID as string,
+        process.env.APPLE_TEAM_ID as string,
+        process.env.APPLE_KEY_ID as string,
+        process.env.APPLE_PRIVATE_KEY as string,
+      ),
+    },
+  },
+  trustedOrigins: ["https://appleid.apple.com"],
+})
+```
+
+> **Note:** Add `https://appleid.apple.com` to `trustedOrigins` so Better Auth can communicate with Apple's authentication servers.
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "apple" })
+```
+
+## Important limitations
+
+Apple emits the `email` claim only on the first authorization. Every subsequent sign-in omits it, and there is no user-info endpoint to retrieve it later. Store the email on first sign-in.
+
+Apple Sign In does **not** support `localhost` or non-HTTPS URLs. You must use a domain with a valid TLS certificate even during development.

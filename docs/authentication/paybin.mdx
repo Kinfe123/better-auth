@@ -1,0 +1,54 @@
+---
+title: "Paybin"
+description: "Paybin provider setup and usage."
+order: 20
+---
+
+# Paybin
+
+This page covers setting up Paybin OAuth in Better Auth.
+
+## Get your credentials
+
+1. Log in to your [Paybin Portfolio](https://portfolio.paybin.io).
+2. Navigate to **Developer Settings** and click **Create OAuth Application**.
+3. Set the redirect URI to `http://localhost:3000/api/auth/callback/paybin` for local development.
+4. Copy the **Client ID** and **Client Secret** after creation and store them securely.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    paybin: {
+      clientId: process.env.PAYBIN_CLIENT_ID as string,
+      clientSecret: process.env.PAYBIN_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "paybin" })
+```
+
+## Custom scopes
+
+By default, Paybin requests `openid`, `email`, and `profile`. You can add additional scopes:
+
+```ts
+paybin: {
+  clientId: process.env.PAYBIN_CLIENT_ID as string,
+  clientSecret: process.env.PAYBIN_CLIENT_SECRET as string,
+  scope: ["openid", "email", "profile", "transactions"],
+}
+```
+
+Paybin maps `sub` → `id`, `name`/`preferred_username`/`email` → `name`, `email` → `email`, `picture` → `image`, and `email_verified` → `emailVerified` from the OIDC ID token.

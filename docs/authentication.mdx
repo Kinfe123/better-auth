@@ -1,0 +1,88 @@
+---
+title: "Authentication"
+description: "Authentication methods, flows, and social providers available in Better Auth."
+order: 0
+---
+
+# Authentication
+
+Better Auth supports multiple authentication strategies out of the box. You can enable email and password sign-in, add any number of social (OAuth) providers, or use passwordless flows — all from the same `betterAuth()` configuration object.
+
+## Email and Password
+
+Enable email/password authentication by setting `emailAndPassword.enabled` to `true` in your auth config:
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  database: { url: process.env.DATABASE_URL as string },
+  emailAndPassword: {
+    enabled: true,
+  },
+})
+```
+
+Once enabled, the `signUp.email` and `signIn.email` methods are available on your auth client.
+
+## Social Providers
+
+Social providers are configured under the `socialProviders` key. Each provider takes a `clientId` and `clientSecret` obtained from that provider's developer portal. The callback URL for every provider follows the pattern `/api/auth/callback/<provider-id>`.
+
+For example, to add Google and GitHub:
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  database: { url: process.env.DATABASE_URL as string },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+On the client, trigger the OAuth flow with:
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "google" })
+```
+
+## Supported Providers
+
+Better Auth includes built-in support for the following social providers. Each has its own setup page covering credentials, redirect URLs, and any provider-specific options:
+
+- [Apple](/docs/authentication/apple)
+- [Atlassian](/docs/authentication/atlassian)
+- [Cognito](/docs/authentication/cognito)
+- [Discord](/docs/authentication/discord)
+- [Dropbox](/docs/authentication/dropbox)
+- [Facebook](/docs/authentication/facebook)
+- [Figma](/docs/authentication/figma)
+- [GitHub](/docs/authentication/github)
+- [GitLab](/docs/authentication/gitlab)
+- Google
+- [Hugging Face](/docs/authentication/huggingface)
+- [Kakao](/docs/authentication/kakao)
+- [Kick](/docs/authentication/kick)
+- [LINE](/docs/authentication/line)
+- [Linear](/docs/authentication/linear)
+- [Microsoft](/docs/authentication/microsoft)
+- [Naver](/docs/authentication/naver)
+- [Notion](/docs/authentication/notion)
+- [Paybin](/docs/authentication/paybin)
+- [Other / Custom OAuth providers](/docs/authentication/other-social-providers)
+
+## Generic OAuth
+
+For providers not listed above, the Generic OAuth plugin lets you connect any OAuth 2.0 or OIDC-compliant provider by supplying a `discoveryUrl` or manual endpoint configuration. See [Other Social Providers](/docs/authentication/other-social-providers) for details.

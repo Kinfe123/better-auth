@@ -1,0 +1,39 @@
+---
+title: "Hugging Face"
+description: "Hugging Face provider setup and usage."
+order: 11
+---
+
+# Hugging Face
+
+This page covers setting up Hugging Face OAuth in Better Auth.
+
+## Get your credentials
+
+Create an OAuth app in your Hugging Face account settings. Make sure to enable the `email` scope — without it, Better Auth cannot retrieve the user's email address. Set the redirect URL to `http://localhost:3000/api/auth/callback/huggingface` for local development. Note your **Client ID** and **Client Secret**.
+
+For detailed instructions, refer to the [Hugging Face OAuth documentation](https://huggingface.co/docs/hub/oauth).
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    huggingface: {
+      clientId: process.env.HUGGINGFACE_CLIENT_ID as string,
+      clientSecret: process.env.HUGGINGFACE_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "huggingface" })
+```

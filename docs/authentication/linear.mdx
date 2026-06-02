@@ -1,0 +1,44 @@
+---
+title: "Linear"
+description: "Linear provider setup and usage."
+order: 15
+---
+
+# Linear
+
+This page covers setting up Linear OAuth in Better Auth.
+
+## Get your credentials
+
+1. Open [Linear Settings → API](https://linear.app/settings/api) and create an OAuth application.
+2. Set the redirect URL to `http://localhost:3000/api/auth/callback/linear` for local development.
+3. Specify the required scopes. The default is `read`; add `write` or other scopes if your app needs them.
+4. Copy the **Client ID** and **Client Secret**.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    linear: {
+      clientId: process.env.LINEAR_CLIENT_ID as string,
+      clientSecret: process.env.LINEAR_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "linear" })
+```
+
+## Available scopes
+
+Linear OAuth supports: `read` (default), `write`, `issues:create`, `comments:create`, and `timeSchedule:write`. Specify additional scopes in your Linear app configuration and pass them via the provider's `scope` option.

@@ -1,0 +1,48 @@
+---
+title: "Cognito"
+description: "Amazon Cognito provider setup and usage."
+order: 3
+---
+
+# Cognito
+
+This page covers integrating Amazon Cognito as an OAuth provider in Better Auth.
+
+## Get your credentials
+
+1. Open the [Amazon Cognito Console](https://console.aws.amazon.com/cognito/) and create a **User Pool**.
+2. Under **App clients**, create a new app client and note the **Client ID** and **Client Secret**.
+3. Under **Domain**, configure a Cognito Hosted UI domain (e.g., `your-app.auth.us-east-1.amazoncognito.com`).
+4. In app client settings, enable the **Authorization code grant** flow and the `openid`, `profile`, and `email` scopes.
+5. Add your callback URL: `http://localhost:3000/api/auth/callback/cognito` for local development.
+
+> **Note:** The callback URL in Cognito must match exactly what Better Auth sends. Mismatches cause OAuth errors.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    cognito: {
+      clientId: process.env.COGNITO_CLIENT_ID as string,
+      clientSecret: process.env.COGNITO_CLIENT_SECRET as string,
+      issuer: "replace-me" as string, // e.g. https://cognito-idp.us-east-1.amazonaws.com/<userPoolId>
+    },
+  },
+})
+```
+
+## Available scopes
+
+Cognito supports the following OAuth scopes: `openid` (required), `profile`, `email`, `phone`, and `aws.cognito.signin.user.admin`. You must configure the scopes your app client accepts in the Cognito console before requesting them.
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+
+const authClient = createAuthClient()
+await authClient.signIn.social({ provider: "cognito" })
+```

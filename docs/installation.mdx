@@ -1,0 +1,87 @@
+---
+title: "Installation"
+description: "Install and configure Better Auth."
+order: 10
+---
+
+# Installation
+
+This page covers installing Better Auth, connecting a database, and confirming that the server instance starts correctly.
+
+## Prerequisites
+
+- Node.js 18 or later (or a compatible runtime like Bun or Deno)
+- A TypeScript project using one of the supported frameworks: Next.js, SvelteKit, SolidStart, or TanStack Start
+- A database supported by one of the Better Auth adapters (PostgreSQL, MySQL, SQLite, MongoDB, or any Kysely-compatible dialect)
+
+## Install the package
+
+```bash
+npm i better-auth
+```
+
+You can also use pnpm, yarn, or bun:
+
+```bash
+pnpm add better-auth
+```
+
+## Create your auth instance
+
+Create a file at `lib/auth.ts` (or `utils/auth.ts`) and call `betterAuth()` with your configuration:
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  database: {
+    url: process.env.DATABASE_URL as string,
+  },
+  emailAndPassword: {
+    enabled: true,
+  },
+})
+```
+
+> **Note:** The `DATABASE_URL` environment variable must be set before starting your server. Better Auth reads it at initialization time to establish the database connection.
+
+## Generate the database schema
+
+Better Auth ships a CLI that generates or migrates your database schema based on your configuration. Run it from your project root:
+
+```bash
+npx better-auth generate
+```
+
+Use `--output` to control where the schema file is saved. For Prisma it writes to `prisma/schema.prisma`; for Drizzle it writes to `schema.ts` in your project root; for Kysely it writes `schema.sql`.
+
+```bash
+npx better-auth generate --output ./db/schema.sql
+```
+
+To apply migrations directly without a confirmation prompt:
+
+```bash
+npx better-auth migrate --yes
+```
+
+## Mount the handler
+
+Better Auth exposes a standard fetch-compatible request handler. Mount it on your framework's catch-all route.
+
+For Next.js App Router, create `app/api/auth/[...all]/route.ts`:
+
+```ts
+import { auth } from "@/lib/auth"
+import { toNextJsHandler } from "better-auth/next-js"
+
+export const { GET, POST } = toNextJsHandler(auth)
+```
+
+## Verify the install
+
+Start your dev server and visit `/api/auth/ok`. A `200` response with `{ "ok": true }` confirms Better Auth is running and connected to your database.
+
+## Next steps
+
+From here, head to [Quickstart](/docs/quickstart) to add sign-in and sign-up flows, or jump straight to [Authentication](/docs/authentication) to configure social providers.

@@ -1,0 +1,54 @@
+---
+title: "Plugins"
+description: "Extend Better Auth with official plugins for 2FA, organizations, API keys, magic links, and more."
+order: 0
+---
+
+# Plugins
+
+Better Auth's plugin system lets you add complex authentication capabilities without writing them from scratch. Plugins run on both the server and the client — the server plugin adds endpoints and database fields, and the client plugin extends the typed auth client with the matching methods.
+
+## Adding a plugin
+
+You install a plugin by adding it to the `plugins` array in your `betterAuth()` config on the server, and to the `plugins` array in `createAuthClient()` on the client. Here's two-factor authentication as an example:
+
+```ts
+// lib/auth.ts (server)
+import { betterAuth } from "better-auth"
+import { twoFactor } from "better-auth/plugins"
+
+export const auth = betterAuth({
+  plugins: [twoFactor()],
+})
+```
+
+```ts
+// lib/auth-client.ts (client)
+import { createAuthClient } from "better-auth/client"
+import { twoFactorClient } from "better-auth/client/plugins"
+
+export const authClient = createAuthClient({
+  plugins: [twoFactorClient()],
+})
+```
+
+After adding a plugin you may need to update your database schema. Run `npx better-auth migrate` to apply any new fields or tables the plugin requires.
+
+## Available plugins
+
+Better Auth ships a wide range of official plugins:
+
+- **Two-Factor Authentication** — TOTP-based 2FA with backup codes.
+- **Organizations** — Multi-tenant support with teams, members, invitations, and role-based access control.
+- **Admin** — User management, banning, and admin-specific access control.
+- **Magic Link** — Passwordless email sign-in via one-time links.
+- **Email OTP** — One-time passwords delivered by email.
+- **Phone Number** — Phone-based sign-in with OTP verification.
+- **API Key** — Issue and manage scoped API keys for your users.
+- **JWT** — Issue JWTs for services that cannot use the session cookie.
+- **Bearer** — Accept Bearer token authentication in your API routes.
+- **Anonymous** — Let users interact before they sign up, then upgrade to a full account.
+- **OIDC Provider** — Turn your app into an OpenID Connect provider.
+- **Generic OAuth** — Connect any OAuth 2.0 or OIDC-compliant provider.
+
+See [Open API](/docs/plugins/open-api) for an example of installing and using an individual plugin.
