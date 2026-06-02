@@ -1,0 +1,97 @@
+---
+title: "Installation"
+description: "Install and configure Better Auth."
+order: 10
+---
+
+# Installation
+
+This page walks you through installing Better Auth, creating your auth instance, and connecting a database so you have a working setup ready for your first sign-in flow.
+
+## Prerequisites
+
+- Node.js 18 or later (or Bun / Deno with web-standard fetch)
+- A TypeScript project using one of the supported frameworks: Next.js, SvelteKit, SolidStart, or TanStack Start
+- A supported database (PostgreSQL, MySQL, SQLite, MongoDB, or any Kysely-compatible dialect)
+
+## Install the package
+
+```bash
+npm install better-auth
+```
+
+```bash
+pnpm add better-auth
+```
+
+```bash
+yarn add better-auth
+```
+
+```bash
+bun add better-auth
+```
+
+## Create your auth instance
+
+Create a file at `lib/auth.ts` (or `src/lib/auth.ts`) and call `betterAuth` with your configuration. At minimum you need a database connection and a secret.
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  database: {
+    url: process.env.DATABASE_URL!,
+  },
+  emailAndPassword: {
+    enabled: true,
+  },
+});
+```
+
+> **Note:** Set `BETTER_AUTH_SECRET` in your environment to a long random string. Better Auth uses it to sign session cookies and tokens. You can generate one with `openssl rand -base64 32`.
+
+## Set environment variables
+
+```bash
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+BETTER_AUTH_SECRET=your-secret-here
+BETTER_AUTH_URL=http://localhost:3000
+```
+
+`BETTER_AUTH_URL` tells the framework where to construct OAuth callback URLs. It is required for any social provider to work correctly.
+
+## Generate the database schema
+
+After configuring your auth instance, run the CLI to create or migrate the required tables:
+
+```bash
+npx better-auth generate
+```
+
+```bash
+npx better-auth migrate
+```
+
+The `generate` command writes a schema file appropriate for your ORM (Prisma, Drizzle, or a raw SQL file for Kysely). The `migrate` command applies changes directly to the database. See CLI Usage for all available flags.
+
+## Mount the handler
+
+Mount the auth handler at your framework's catch-all route. For Next.js App Router, create `app/api/auth/[...all]/route.ts`:
+
+```ts
+import { auth } from "@/lib/auth";
+import { toNextJsHandler } from "better-auth/next-js";
+
+export const { GET, POST } = toNextJsHandler(auth);
+```
+
+Better Auth exposes a web-standard `Request`/`Response` handler, so similar adapters exist for SvelteKit, SolidStart, and TanStack Start.
+
+## Verify the installation
+
+Start your dev server and navigate to `http://localhost:3000/api/auth/ok`. You should receive a JSON response confirming the handler is live.
+
+## Next steps
+
+With installation done, head to [Quickstart](/docs/quickstart) to add a sign-in form, or jump straight into [Authentication](/docs/authentication) to configure a social provider.

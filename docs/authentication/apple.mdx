@@ -1,0 +1,65 @@
+---
+title: "Apple"
+description: "Apple Sign In setup and usage."
+order: 5
+---
+
+# Apple
+
+Apple Sign In requires an active Apple Developer account. The setup involves creating an App ID, a Service ID, and generating a private key to derive the client secret JWT.
+
+## Get your credentials
+
+1. In the [Apple Developer Portal](https://developer.apple.com/account/resources), go to **Certificates, Identifiers & Profiles**.
+2. Create an **App ID** with the **Sign In with Apple** capability enabled.
+3. Create a **Service ID** and enable **Sign In with Apple**. Under **Return URLs**, add `https://yourdomain.com/api/auth/callback/apple`.
+4. Create a **Key** with the **Sign In with Apple** option and download the `.p8` file — this is only available once.
+5. Note your **Team ID**, **Key ID**, and **Service ID** (used as the client ID).
+
+> **Warning:** Apple Sign In does not support `localhost` or non-HTTPS URLs. During development you must use a domain with a valid TLS certificate.
+
+## Generate the client secret
+
+Apple requires a signed JWT as the client secret rather than a plain string. Use the `jose` library to generate it:
+
+```ts
+import { betterAuth } from "better-auth";
+import { importPKCS8, SignJWT } from "jose";
+
+async function generateAppleClientSecret(
+  clientId: string,
+  teamId: string,
+  keyId: string,
+  privateKey: string
+) {
+  const key = await importPKCS8(privateKey, "ES256");
+  const now = Math.floor(Date.now() / 1000);
+  return new SignJWT({})
+    .setProtectedHeader({ alg: "ES256", kid: keyId })
+    .setIssuer(teamId)
+    .setSubject(clientId)
+    .setAudience("https://appleid.apple.com")
+    .setIssuedAt(now)
+    .setExpirationTime(now + 180 * 24 * 60 * 60)
+    .sign(key);
+}
+
+export const auth = betterAuth({
+  trustedOrigins: ["https://appleid.apple.com"],
+  socialProviders: {
+    apple: {
+      clientId: process.env.APPLE_CLIENT_ID!,
+      clientSecret: await generateAppleClientSecret(
+        process.env.APPLE_CLIENT_ID!,
+        process.env.APPLE_TEAM_ID!,
+        process.env.APPLE_KEY_ID!,
+        process.env.APPLE_PRIVATE_KEY!
+      ),
+    },
+  },
+});
+```
+
+## Email availability
+
+Apple emits the `email` claim only on the first authorization. Every subsequent sign-in omits it, and Apple provides no user-info endpoint to fetch it later. Persist the email during the initial sign-in and use `mapProfileToUser` to handle subsequent logins gracefully.

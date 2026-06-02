@@ -1,0 +1,67 @@
+---
+title: "Microsoft"
+description: "Microsoft (Azure Entra ID) provider setup and usage."
+order: 4
+---
+
+# Microsoft
+
+Better Auth supports sign-in with Microsoft accounts via Azure Entra ID (formerly Azure Active Directory). This lets users authenticate with personal Microsoft accounts or organizational (work/school) accounts depending on your tenant configuration.
+
+## Get your Microsoft credentials
+
+1. Go to the [Azure Portal](https://portal.azure.com) → **Azure Active Directory → App registrations → New registration**.
+2. Under **Redirect URIs**, add `http://localhost:3000/api/auth/callback/microsoft` for local development.
+3. After registration, go to **Certificates & secrets** and create a new client secret.
+4. Copy the **Application (client) ID** and the client secret value.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    microsoft: {
+      clientId: process.env.MS_APP_ID!,
+      clientSecret: process.env.MS_CLIENT_SECRET!,
+      tenantId: process.env.MS_TENANT_ID, // optional; defaults to "common"
+    },
+  },
+});
+```
+
+## Sign in with Microsoft
+
+```ts
+import { createAuthClient } from "better-auth/client";
+
+const authClient = createAuthClient();
+
+await authClient.signIn.social({
+  provider: "microsoft",
+  callbackURL: "/dashboard",
+});
+```
+
+## Profile images
+
+Microsoft returns profile images as base64-encoded strings. Large images can exceed HTTP header size limits and cause request failures. Use `mapProfileToUser` to upload the image to your own storage or strip it:
+
+```ts
+export const auth = betterAuth({
+  socialProviders: {
+    microsoft: {
+      clientId: process.env.MS_APP_ID!,
+      clientSecret: process.env.MS_CLIENT_SECRET!,
+      mapProfileToUser: (profile) => ({
+        image: null, // discard the image
+      }),
+    },
+  },
+});
+```
+
+## Email availability
+
+Entra ID does not emit the `email` claim for managed users by default. Request it as an optional claim in your app manifest, and use `profile.oid` (plus `profile.tid` across tenants) as the stable identity anchor — not the email address.
