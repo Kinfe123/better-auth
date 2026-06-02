@@ -1,0 +1,113 @@
+---
+title: "Installation"
+description: "Install and configure Better Auth."
+order: 10
+---
+
+# Installation
+
+This page walks you through installing Better Auth, connecting a database, and mounting the auth handler in your framework of choice.
+
+## Prerequisites
+
+- Node.js 18 or later (or Bun / Deno with compatible runtimes)
+- A supported database (PostgreSQL, MySQL, SQLite, MongoDB, or any Kysely-compatible dialect)
+- A package manager: npm, pnpm, yarn, or bun
+
+## Install the package
+
+```bash
+pnpm add better-auth
+```
+
+```bash
+npm install better-auth
+```
+
+```bash
+yarn add better-auth
+```
+
+```bash
+bun add better-auth
+```
+
+## Create your auth instance
+
+Create an `auth.ts` file — the Better Auth CLI looks for it in `./`, `./utils`, `./lib`, or the `src` equivalents by default.
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  database: {
+    url: process.env.DATABASE_URL,
+  },
+  emailAndPassword: {
+    enabled: true,
+  },
+});
+```
+
+Set `DATABASE_URL` in your `.env` file to point at your database.
+
+```bash
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+```
+
+## Generate the database schema
+
+Run the CLI to create or migrate the required tables:
+
+```bash
+npx better-auth generate
+```
+
+```bash
+npx better-auth migrate
+```
+
+The `generate` command writes a schema file (Prisma schema, Drizzle `schema.ts`, or a SQL file depending on your adapter). The `migrate` command applies those changes directly to the database.
+
+> **Note:** Pass `--config ./path/to/auth.ts` if your config file lives somewhere the CLI won't find automatically.
+
+## Mount the handler
+
+Better Auth exposes a fetch-compatible handler. Mount it at `/api/auth/[...all]` (or equivalent) in your framework.
+
+**Next.js App Router**
+
+```ts
+// app/api/auth/[...all]/route.ts
+import { auth } from "@/lib/auth";
+import { toNextJsHandler } from "better-auth/next-js";
+
+export const { GET, POST } = toNextJsHandler(auth);
+```
+
+**SvelteKit**
+
+```ts
+// src/hooks.server.ts
+import { auth } from "$lib/auth";
+import { svelteKitHandler } from "better-auth/svelte-kit";
+
+export async function handle({ event, resolve }) {
+  return svelteKitHandler({ event, resolve, auth });
+}
+```
+
+## Create the client
+
+```ts
+// lib/auth-client.ts
+import { createAuthClient } from "better-auth/client";
+
+export const authClient = createAuthClient();
+```
+
+You're now ready to call `authClient.signIn.email()`, `authClient.signIn.social()`, and other methods from your UI.
+
+## Next steps
+
+Head to [Quickstart](/docs/quickstart) to see a complete working example, or browse the [Authentication](/docs/authentication) section to add social providers.

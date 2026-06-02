@@ -1,0 +1,75 @@
+---
+title: "Authentication"
+description: "Authentication methods, flows, and social providers available in Better Auth."
+order: 0
+---
+
+# Authentication
+
+Better Auth supports multiple authentication methods out of the box — email and password, social OAuth providers, magic links, one-time passwords, and more. You enable each method through your `betterAuth()` configuration and call it from the typed client.
+
+## Email and Password
+
+Email/password authentication is disabled by default. Enable it with a single option:
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+  },
+});
+```
+
+Once enabled, the client exposes `authClient.signUp.email()`, `authClient.signIn.email()`, and `authClient.signOut()`.
+
+## Social Providers
+
+Better Auth ships built-in support for the most popular OAuth providers. You add them under the `socialProviders` key in your auth config, passing the `clientId` and `clientSecret` you obtain from each provider's developer portal.
+
+The callback URL pattern is always `https://yourdomain.com/api/auth/callback/<provider>` — set this in each provider's portal.
+
+Providers with dedicated setup guides:
+
+- [Apple](/docs/authentication/apple)
+- [Atlassian](/docs/authentication/atlassian)
+- [Amazon Cognito](/docs/authentication/cognito)
+- [Discord](/docs/authentication/discord)
+- [Dropbox](/docs/authentication/dropbox)
+- [Facebook](/docs/authentication/facebook)
+- [Figma](/docs/authentication/figma)
+- [GitHub](/docs/authentication/github)
+- [GitLab](/docs/authentication/gitlab)
+- [Google](/docs/authentication/google)
+- [Hugging Face](/docs/authentication/huggingface)
+- [Kakao](/docs/authentication/kakao)
+- [Kick](/docs/authentication/kick)
+- [LINE](/docs/authentication/line)
+- [Linear](/docs/authentication/linear)
+- [Microsoft](/docs/authentication/microsoft)
+- [Naver](/docs/authentication/naver)
+- [Notion](/docs/authentication/notion)
+- [Paybin](/docs/authentication/paybin)
+- [Other providers via Generic OAuth](/docs/authentication/other-social-providers)
+
+## Calling Social Sign-In
+
+All social providers use the same client call:
+
+```ts
+import { createAuthClient } from "better-auth/client";
+
+const authClient = createAuthClient();
+
+await authClient.signIn.social({
+  provider: "google",
+  callbackURL: "/dashboard",
+});
+```
+
+The browser redirects to the provider, then back to your callback URL, where Better Auth finishes the session and redirects to `callbackURL`.
+
+## Generic OAuth
+
+For providers not listed above, the Generic OAuth plugin supports any OAuth 2.0 or OIDC-compliant provider. See [Other Social Providers](/docs/authentication/other-social-providers) for configuration details.

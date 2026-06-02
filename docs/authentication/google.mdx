@@ -1,0 +1,59 @@
+---
+title: "Google"
+description: "Google provider setup and usage."
+order: 10
+---
+
+# Google
+
+This page explains how to configure Google OAuth in Better Auth.
+
+## Get your credentials
+
+Create a project and OAuth credentials in the [Google Cloud Console](https://console.cloud.google.com/apis/dashboard):
+
+1. Go to **APIs & Services > Credentials** and click **Create Credentials > OAuth client ID**.
+2. Set the application type to **Web application**.
+3. Add `http://localhost:3000/api/auth/callback/google` as an authorized redirect URI for development, and your production domain for production.
+
+> **Note:** You must configure `baseURL` in your Better Auth options so the callback URL sent to Google is correct. Set `BETTER_AUTH_URL=https://your-domain.com` in your `.env` file, or pass `baseURL` directly in the `betterAuth()` config.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
+});
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client";
+
+const authClient = createAuthClient();
+
+await authClient.signIn.social({
+  provider: "google",
+  callbackURL: "/dashboard",
+});
+```
+
+## Sign in with an ID token
+
+If you obtain a Google ID token on the client (for example from Google One Tap), you can sign in directly without a redirect:
+
+```ts
+await authClient.signIn.social({
+  provider: "google",
+  idToken: { token: googleIdToken },
+});
+```

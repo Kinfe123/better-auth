@@ -1,0 +1,96 @@
+---
+title: "Quickstart"
+description: "Run Better Auth for the first time."
+order: 20
+---
+
+# Quickstart
+
+This guide shows you the shortest path to a working Better Auth setup: one server instance, one client, and a sign-in call you can actually run.
+
+## 1. Install
+
+```bash
+pnpm add better-auth
+```
+
+## 2. Create the server instance
+
+Create `lib/auth.ts` at your project root (or `src/lib/auth.ts`):
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  database: {
+    url: process.env.DATABASE_URL,
+  },
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+});
+```
+
+Add the required environment variables to your `.env` file:
+
+```bash
+DATABASE_URL=postgresql://user:password@localhost:5432/mydb
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+```
+
+## 3. Run the database migration
+
+```bash
+npx better-auth migrate
+```
+
+This creates the `user`, `session`, `account`, and `verification` tables Better Auth needs.
+
+## 4. Mount the route handler
+
+**Next.js App Router**
+
+```ts
+// app/api/auth/[...all]/route.ts
+import { auth } from "@/lib/auth";
+import { toNextJsHandler } from "better-auth/next-js";
+
+export const { GET, POST } = toNextJsHandler(auth);
+```
+
+## 5. Create the client
+
+```ts
+// lib/auth-client.ts
+import { createAuthClient } from "better-auth/client";
+
+export const authClient = createAuthClient();
+```
+
+## 6. Sign in
+
+```ts
+// Sign in with email and password
+const { data, error } = await authClient.signIn.email({
+  email: "user@example.com",
+  password: "securepassword",
+});
+
+// Sign in with GitHub (redirects to GitHub)
+await authClient.signIn.social({ provider: "github" });
+```
+
+That's it. Better Auth handles the session, cookies, and callback automatically.
+
+> **Note:** For GitHub OAuth, set the redirect URL in your GitHub app to `http://localhost:3000/api/auth/callback/github` during development.
+
+## Next steps
+
+Add more social providers in the [Authentication](/docs/authentication) section, or explore the [Plugins](/docs/plugins) section for two-factor auth, organizations, API keys, and more.

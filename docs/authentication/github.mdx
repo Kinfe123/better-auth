@@ -1,0 +1,46 @@
+---
+title: "GitHub"
+description: "GitHub provider setup and usage."
+order: 8
+---
+
+# GitHub
+
+This page explains how to configure GitHub OAuth in Better Auth.
+
+## Get your credentials
+
+Create an OAuth App or GitHub App in the [GitHub Developer Settings](https://github.com/settings/developers). Set the redirect URL to `http://localhost:3000/api/auth/callback/github` for local development.
+
+> **Important:** You must include the `user:email` scope in your GitHub app. Without it, Better Auth cannot retrieve the user's email address and will return an `email_not_found` error.
+
+For **GitHub Apps** (as opposed to OAuth Apps), you must also go to **Permissions and Events > Account Permissions > Email Addresses** and set it to **Read-Only**.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+});
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client";
+
+const authClient = createAuthClient();
+
+await authClient.signIn.social({ provider: "github" });
+```
+
+## Refresh tokens
+
+GitHub does not issue refresh tokens for OAuth Apps. Access tokens remain valid until the user revokes them or they go unused for a year, so you don't need to handle token refresh for standard OAuth App setups.

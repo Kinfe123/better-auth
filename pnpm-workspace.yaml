@@ -3,6 +3,7 @@ packages:
   - docs
   - e2e/**
   - test
+  - ".docs/site"
 
 blockExoticSubdeps: true
 
