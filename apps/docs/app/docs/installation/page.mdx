@@ -1,0 +1,130 @@
+---
+title: "Installation"
+description: "Install and configure Better Auth."
+order: 10
+---
+
+# Installation
+
+Better Auth is a TypeScript library you install once and configure in a single file. This page covers the full setup: installing the package, creating your auth instance, connecting a database, and mounting the handler in your framework.
+
+## Prerequisites
+
+You need a Node.js project (or a compatible runtime like Bun) with TypeScript configured. Better Auth works with Next.js, SvelteKit, SolidStart, and TanStack Start out of the box.
+
+## Install the package
+
+```bash
+npm install better-auth
+```
+
+```bash
+pnpm add better-auth
+```
+
+```bash
+yarn add better-auth
+```
+
+```bash
+bun add better-auth
+```
+
+## Create your auth instance
+
+Create a file — conventionally `lib/auth.ts` or `utils/auth.ts` — and call `betterAuth()` with your database adapter and the features you want to enable.
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  database: {
+    // See the database adapter docs for your specific DB
+    url: process.env.DATABASE_URL,
+  },
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Set your base URL
+
+Better Auth needs to know the base URL of your application to construct OAuth callback URLs correctly. Set this in your environment:
+
+```bash
+BETTER_AUTH_URL=https://your-domain.com
+```
+
+For local development, use `http://localhost:3000` (or whatever port your dev server runs on).
+
+## Mount the handler
+
+### Next.js (App Router)
+
+```ts
+// app/api/auth/[...all]/route.ts
+import { auth } from "@/lib/auth"
+import { toNextJsHandler } from "better-auth/next-js"
+
+export const { GET, POST } = toNextJsHandler(auth)
+```
+
+### SvelteKit
+
+```ts
+// src/hooks.server.ts
+import { auth } from "$lib/auth"
+import { svelteKitHandler } from "better-auth/svelte-kit"
+
+export async function handle({ event, resolve }) {
+  return svelteKitHandler({ event, resolve, auth })
+}
+```
+
+### SolidStart
+
+```ts
+// src/routes/api/auth/[...all].ts
+import { auth } from "~/lib/auth"
+import { toSolidStartHandler } from "better-auth/solid-start"
+
+export const { GET, POST } = toSolidStartHandler(auth)
+```
+
+## Generate the database schema
+
+Once your auth instance is configured, run the CLI to create the required tables:
+
+```bash
+npx @better-auth/cli generate
+```
+
+```bash
+npx @better-auth/cli migrate
+```
+
+`generate` outputs a schema file (Prisma, Drizzle, or SQL depending on your adapter). `migrate` applies it directly to your database.
+
+## Create the client
+
+The auth client mirrors the server API with full type inference. Create it once and import it wherever you need auth in the browser.
+
+```ts
+// lib/auth-client.ts
+import { createAuthClient } from "better-auth/client"
+
+export const authClient = createAuthClient({
+  baseURL: process.env.NEXT_PUBLIC_AUTH_URL,
+})
+```
+
+> **Note:** The `baseURL` on the client must point to the same origin as your mounted auth handler.
+
+You're ready to sign users in. Head to [Quickstart](/docs/quickstart) for a complete working example.

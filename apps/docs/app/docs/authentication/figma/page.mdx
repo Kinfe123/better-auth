@@ -1,0 +1,41 @@
+---
+title: "Figma"
+description: "Figma provider setup and usage."
+order: 7
+---
+
+# Figma
+
+The Figma provider lets your users sign in with their Figma account using OAuth 2.0.
+
+## Get your credentials
+
+1. Go to the [Figma Developer Apps page](https://www.figma.com/developers/apps) and click **Create new app**.
+2. Fill out the app name and description.
+3. Set your redirect URI: `https://yourdomain.com/api/auth/callback/figma`.
+4. Note your **Client ID** and **Client Secret**.
+
+The default scope is `current_user:read`. For additional scopes like `file_content:read`, refer to the [Figma OAuth scopes documentation](https://developers.figma.com/docs/rest-api/scopes).
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    figma: {
+      clientId: process.env.FIGMA_CLIENT_ID as string,
+      clientSecret: process.env.FIGMA_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { authClient } from "@/lib/auth-client"
+
+await authClient.signIn.social({ provider: "figma" })
+```

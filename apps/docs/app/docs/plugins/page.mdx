@@ -1,0 +1,52 @@
+---
+title: "Plugins"
+description: "Extend Better Auth with official plugins for two-factor auth, organizations, API keys, magic links, and more."
+order: 0
+---
+
+# Plugins
+
+Better Auth's plugin system lets you add new authentication flows, extend the database schema, and expose new API endpoints — all without touching the core. Every plugin is added to the `plugins` array in your `betterAuth()` call, and most have a corresponding client plugin that gives the browser access to the same API with full type safety.
+
+## Adding a plugin
+
+Here's the general pattern. Import the server plugin, add it to `plugins`, then import the client plugin and add it to `createAuthClient`:
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+import { twoFactor } from "better-auth/plugins"
+
+export const auth = betterAuth({
+  plugins: [twoFactor()],
+})
+```
+
+```ts
+// lib/auth-client.ts
+import { createAuthClient } from "better-auth/client"
+import { twoFactorClient } from "better-auth/client/plugins"
+
+export const authClient = createAuthClient({
+  plugins: [twoFactorClient()],
+})
+```
+
+After adding plugins that modify the schema, run `npx @better-auth/cli migrate` to apply the new tables or columns.
+
+## Available plugins
+
+Better Auth ships a wide set of official plugins. The most commonly used ones are:
+
+- **Two Factor** (`twoFactor`) — TOTP-based two-factor authentication with backup code support.
+- **Organization** (`organization`) — Multi-tenant organizations with members, roles, invitations, and access control.
+- **Admin** (`admin`) — User management endpoints for listing, banning, and updating users with role-based access.
+- **Anonymous** (`anonymous`) — Let users interact with your app without signing up, then link an account later.
+- **Magic Link** (`magicLink`) — Passwordless sign-in via emailed links.
+- **Email OTP** (`emailOTP`) — Passwordless sign-in via one-time codes sent to email.
+- **API Key** (`apiKey`) — Issue and validate long-lived API keys scoped to users or organizations.
+- **Bearer** (`bearer`) — Accept Bearer tokens in API routes for service-to-service auth.
+- **OIDC Provider** (`oidcProvider`) — Turn your app into an OpenID Connect identity provider.
+- **JWT** (`jwt`) — Issue signed JWTs for users, useful for services that can't use session cookies.
+- **Phone Number** (`phoneNumber`) — Phone number sign-in with OTP verification.
+- **Username** (`username`) — Add username support alongside email/password.

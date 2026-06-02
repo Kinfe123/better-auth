@@ -1,0 +1,60 @@
+---
+title: "Authentication"
+description: "Authentication methods, flows, and social providers available in Better Auth."
+order: 0
+---
+
+# Authentication
+
+Better Auth supports email/password authentication out of the box and integrates with dozens of OAuth social providers. Every provider follows the same pattern: get credentials from the provider's developer portal, add them to your `betterAuth()` config under `socialProviders`, and call `authClient.signIn.social({ provider: "..." })` from the browser.
+
+## Email & Password
+
+Email and password authentication is built into the core. Enable it with one option:
+
+```ts
+export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+  },
+})
+```
+
+Once enabled, you can call `authClient.signIn.email()` and `authClient.signUp.email()` from the client. The core also handles password changes, email verification, and password reset flows.
+
+## Social Providers
+
+Better Auth ships with first-class support for a wide range of OAuth providers. Each provider page in this section walks you through getting credentials from the provider's developer portal and adding them to your auth config.
+
+Providers with dedicated setup guides:
+
+- [Apple](/docs/authentication/apple) — requires a `.p8` key and a JWT-based client secret
+- [Atlassian](/docs/authentication/atlassian) — Jira and Confluence OAuth
+- [Amazon Cognito](/docs/authentication/cognito) — AWS Cognito User Pools
+- [Discord](/docs/authentication/discord)
+- [Dropbox](/docs/authentication/dropbox)
+- [Facebook](/docs/authentication/facebook) — supports ID token and access token sign-in
+- [Figma](/docs/authentication/figma)
+- [GitHub](/docs/authentication/github) — note the required `user:email` scope
+- [GitLab](/docs/authentication/gitlab)
+- [Google](/docs/authentication/google) — supports ID token sign-in for mobile
+- [Hugging Face](/docs/authentication/huggingface)
+- [Kakao](/docs/authentication/kakao)
+- [Kick](/docs/authentication/kick)
+- [LINE](/docs/authentication/line)
+- [Linear](/docs/authentication/linear)
+- [Microsoft](/docs/authentication/microsoft) — Azure Entra ID
+- [Naver](/docs/authentication/naver)
+- [Notion](/docs/authentication/notion)
+- [Paybin](/docs/authentication/paybin)
+- [Other Social Providers](/docs/authentication/other-social-providers) — Auth0, Keycloak, Okta, Slack, and any custom OAuth2/OIDC provider via the Generic OAuth plugin
+
+## OAuth Callback URL Pattern
+
+Every provider uses the same callback URL shape:
+
+```
+https://your-domain.com/api/auth/callback/<provider-id>
+```
+
+For local development this is typically `http://localhost:3000/api/auth/callback/<provider-id>`. Register this exact URL in the provider's developer portal. If you change the `basePath` of your auth routes, update the callback URL to match.

@@ -1,0 +1,59 @@
+---
+title: "Facebook"
+description: "Facebook provider setup and usage."
+order: 6
+---
+
+# Facebook
+
+The Facebook provider lets your users sign in with their Facebook account. It supports standard OAuth redirect sign-in as well as direct sign-in using an ID token or access token from Facebook's SDK — useful for iOS and Android apps.
+
+## Get your credentials
+
+1. Go to the [Facebook Developer Portal](https://developers.facebook.com/) and select your app.
+2. Navigate to **App Settings > Basic**.
+3. Copy the **App ID** (your `clientId`) and **App Secret** (your `clientSecret`).
+4. Add your redirect URL: `http://localhost:3000/api/auth/callback/facebook`.
+
+> **Note:** Never expose the `clientSecret` in client-side code.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    facebook: {
+      clientId: process.env.FACEBOOK_CLIENT_ID as string,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+By default, Better Auth requests the `email` and `public_profile` scopes and retrieves `id`, `name`, `email`, and `picture` fields. You can extend both:
+
+```ts
+facebook: {
+  clientId: process.env.FACEBOOK_CLIENT_ID as string,
+  clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+  scopes: ["email", "public_profile", "user_friends"],
+  fields: ["user_friends"],
+}
+```
+
+## Sign in
+
+```ts
+import { authClient } from "@/lib/auth-client"
+
+// Standard redirect
+await authClient.signIn.social({ provider: "facebook" })
+
+// With ID token (e.g., from Facebook iOS SDK — no redirect)
+await authClient.signIn.social({
+  provider: "facebook",
+  idToken: { token: idToken },
+})
+```

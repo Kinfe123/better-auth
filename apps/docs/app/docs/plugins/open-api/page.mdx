@@ -1,0 +1,40 @@
+---
+title: "Open API"
+order: 1
+---
+
+# Open API
+
+> **Note:** This plugin is in early development. Some endpoints and schema details may be incomplete.
+
+## Add the plugin
+
+```ts
+import { betterAuth } from "better-auth"
+import { openAPI } from "better-auth/plugins"
+
+export const auth = betterAuth({
+  plugins: [
+    openAPI(),
+  ],
+})
+```
+
+Once added, navigate to `/api/auth/reference` to see the full reference. Core endpoints appear under the **Default** group. Each plugin's endpoints are grouped under the plugin's name. Model schemas are grouped under **Models**.
+
+## Get the raw schema
+
+You can retrieve the generated OpenAPI 3.0 schema as a JSON object programmatically:
+
+```ts
+import { auth } from "@/lib/auth"
+
+const schema = await auth.api.generateOpenAPISchema()
+console.log(schema)
+```
+
+This is useful if you want to serve the schema at a custom endpoint, feed it into a code generator, or merge it with your own API documentation.
+
+## Using with Scalar's multi-source feature
+
+If you already use Scalar for your own API, you can add the Better Auth schema as an additional source alongside your existing API spec. Refer to the [Scalar documentation](https://scalar.com/) for how to configure multiple sources.

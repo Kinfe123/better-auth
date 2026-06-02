@@ -1,0 +1,96 @@
+---
+title: "Quickstart"
+description: "Run Better Auth for the first time."
+order: 20
+---
+
+# Quickstart
+
+This guide gets you from a fresh Next.js project to a working sign-in flow with email/password and GitHub OAuth. You'll have real users stored in a database by the end.
+
+## 1. Install Better Auth
+
+```bash
+npm install better-auth
+```
+
+## 2. Set environment variables
+
+```bash
+DATABASE_URL=file:./dev.db
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=your-secret-key-here
+
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+```
+
+`BETTER_AUTH_SECRET` is used to sign sessions. Generate a random string — at least 32 characters.
+
+## 3. Create the auth instance
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  database: {
+    url: process.env.DATABASE_URL,
+  },
+  emailAndPassword: {
+    enabled: true,
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## 4. Mount the route handler
+
+```ts
+// app/api/auth/[...all]/route.ts
+import { auth } from "@/lib/auth"
+import { toNextJsHandler } from "better-auth/next-js"
+
+export const { GET, POST } = toNextJsHandler(auth)
+```
+
+All auth endpoints — sign-in, sign-up, OAuth callbacks, session management — are served from `/api/auth/*`.
+
+## 5. Push the schema
+
+```bash
+npx @better-auth/cli migrate
+```
+
+This creates the `user`, `session`, `account`, and `verification` tables your auth instance needs.
+
+## 6. Create the client and sign in
+
+```ts
+// lib/auth-client.ts
+import { createAuthClient } from "better-auth/client"
+
+export const authClient = createAuthClient()
+```
+
+Call sign-in from any client component:
+
+```ts
+import { authClient } from "@/lib/auth-client"
+
+// Email & password
+await authClient.signIn.email({
+  email: "user@example.com",
+  password: "securepassword",
+})
+
+// GitHub OAuth
+await authClient.signIn.social({ provider: "github" })
+```
+
+That's it. You have a working auth system. From here, explore [social providers](/docs/authentication) to add more OAuth options, or check out [Plugins](/docs/plugins) to add two-factor auth, organizations, magic links, and more.

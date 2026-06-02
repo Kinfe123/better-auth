@@ -1,0 +1,40 @@
+# Docs Maintenance Guide
+Use this file as the handoff checklist for future edits to this documentation PR.
+## Source Layout
+- The docs source lives in `apps/docs`.
+- `docs.json` is the Docs Cloud configuration for publishing, previews, and content roots.
+- Keep every page grounded in README content, package metadata, source exports, CLI help, environment examples, or existing docs.
+## Docs Routes
+- /docs - Introduction
+- /docs/installation - Installation
+- /docs/quickstart - Quickstart
+- /docs/authentication - Authentication
+- /docs/authentication/apple - Apple
+- /docs/authentication/atlassian - Atlassian
+- /docs/authentication/cognito - Cognito
+- /docs/authentication/discord - Discord
+- /docs/authentication/dropbox - Dropbox
+- /docs/authentication/facebook - Facebook
+- /docs/authentication/figma - Figma
+- /docs/authentication/github - GitHub
+- /docs/authentication/gitlab - GitLab
+- /docs/authentication/google - Google
+- /docs/authentication/huggingface - Hugging Face
+- /docs/authentication/kakao - Kakao
+- /docs/authentication/kick - Kick
+- /docs/authentication/line - LINE
+- /docs/authentication/linear - Linear
+- /docs/authentication/microsoft - Microsoft
+- /docs/authentication/naver - Naver
+- /docs/authentication/notion - Notion
+- /docs/authentication/other-social-providers - Other Social Providers
+- /docs/authentication/paybin - Paybin
+- 2 more generated pages are present in the docs source.
+## Editing Guidelines
+- Prefer reader-facing setup, usage, and troubleshooting notes over source inventories.
+- Do not add commands, flags, environment variables, routes, imports, or framework names unless they are present in the repository.
+- If you add or rename a page, keep its frontmatter title and description accurate and make sure the navigation ordering still includes it.
+- Avoid analyzer language such as generated from, source evidence, implementation map, source surface, or detected in files.
+## Verification
+- Build the docs site with `cd apps/docs && node ./scripts/docs-cloud-vercel.mjs install && node ./scripts/docs-cloud-vercel.mjs build` before handing off a docs PR.
+- Open `/docs` and at least one generated leaf page to confirm the sidebar and page content match the PR.
