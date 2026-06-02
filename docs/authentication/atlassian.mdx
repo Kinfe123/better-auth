@@ -1,0 +1,41 @@
+---
+title: "Atlassian"
+description: "Atlassian provider setup and usage."
+order: 2
+---
+
+# Atlassian
+
+This page explains how to add Atlassian OAuth to Better Auth so your users can sign in with their Atlassian account.
+
+## Get your credentials
+
+1. Sign in to your Atlassian account and open the [Atlassian Developer Console](https://developer.atlassian.com/console/myapps/).
+2. Click **Create new app** and fill in the app details.
+3. Configure your redirect URI: `https://yourdomain.com/api/auth/callback/atlassian`.
+4. Note your **Client ID** and **Client Secret**.
+
+The default scope is `read:jira-user` and `offline_access`. For additional scopes, see the [Atlassian OAuth documentation](https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/).
+
+> **Note:** The redirect URI must exactly match your application's callback URL. Update it if you change the base path of your auth routes.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    atlassian: {
+      clientId: process.env.ATLASSIAN_CLIENT_ID as string,
+      clientSecret: process.env.ATLASSIAN_CLIENT_SECRET as string,
+    },
+  },
+});
+```
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "atlassian" });
+```

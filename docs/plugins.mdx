@@ -1,0 +1,51 @@
+---
+title: "Plugins"
+description: "Extend Better Auth with official plugins for two-factor auth, organizations, API keys, and more."
+order: 0
+---
+
+# Plugins
+
+Better Auth's plugin system lets you extend authentication with additional capabilities without changing the core. You add plugins to your server instance via the `plugins` array, and corresponding client plugins to your `createAuthClient()` call.
+
+## Adding a plugin
+
+All plugins follow the same pattern: import the plugin, add it to `betterAuth()`, and optionally add a matching client plugin.
+
+```ts
+import { betterAuth } from "better-auth";
+import { twoFactor } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  plugins: [twoFactor()],
+});
+```
+
+```ts
+import { createAuthClient } from "better-auth/client";
+import { twoFactorClient } from "better-auth/client/plugins";
+
+export const authClient = createAuthClient({
+  plugins: [twoFactorClient()],
+});
+```
+
+## Available plugins
+
+Better Auth ships a wide set of official plugins:
+
+- **Two Factor** — TOTP and backup code 2FA for any user account.
+- **Organization** — Multi-tenant organizations with roles, members, teams, and invitation workflows.
+- **Admin** — User management, banning, and role-based access control for admin dashboards.
+- **API Key** — Issue and validate long-lived API keys with optional expiration and rate limits.
+- **Anonymous** — Let users interact with your app before they create an account, then merge their session on sign-up.
+- **Magic Link** — Passwordless sign-in via a one-time link sent to the user's email.
+- **Email OTP** — Sign in or verify identity with a one-time code sent to the user's email.
+- **Phone Number** — Phone-based sign-in and verification via SMS OTP.
+- **Username** — Add username support on top of email/password authentication.
+- **Bearer** — Accept Bearer tokens in the `Authorization` header for API-first use cases.
+- **JWT** — Expose a JWKS endpoint and issue signed JWTs for services that can't use session cookies.
+- **OIDC Provider** — Turn your Better Auth instance into an OpenID Connect provider.
+- **Open API** — Generate and serve an interactive OpenAPI reference for all your auth endpoints. See [Open API](/docs/plugins/open-api).
+
+Each plugin may add routes to your server, fields to your database schema, and methods to your client. Run `npx better-auth generate` after adding a plugin to update the schema.

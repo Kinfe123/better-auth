@@ -1,0 +1,76 @@
+---
+title: "Other Social Providers"
+description: "Use the Generic OAuth plugin to connect any OAuth 2.0 or OIDC provider."
+order: 19
+---
+
+# Other Social Providers
+
+Better Auth supports any OAuth 2.0 or OpenID Connect provider through the Generic OAuth plugin. You can configure any compliant provider manually, or use pre-built helper functions for Auth0, Keycloak, Okta, Microsoft Entra ID, and Slack.
+
+## Add the plugin
+
+```ts
+import { betterAuth } from "better-auth";
+import { genericOAuth } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  plugins: [
+    genericOAuth({
+      config: [
+        {
+          providerId: "my-provider",
+          clientId: "replace-me",
+          clientSecret: "your-secret-value",
+          discoveryUrl:
+            "https://auth.example.com/.well-known/openid-configuration",
+        },
+      ],
+    }),
+  ],
+});
+```
+
+## Add the client plugin
+
+```ts
+import { createAuthClient } from "better-auth/client";
+import { genericOAuthClient } from "better-auth/client/plugins";
+
+export const authClient = createAuthClient({
+  plugins: [genericOAuthClient()],
+});
+```
+
+## Sign in
+
+```ts
+await authClient.signIn.oauth2({
+  providerId: "my-provider",
+  callbackURL: "/dashboard",
+});
+```
+
+## Pre-configured providers
+
+Better Auth ships helper functions for popular providers. Here's an example using Slack:
+
+```ts
+import { betterAuth } from "better-auth";
+import { genericOAuth, slack } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  plugins: [
+    genericOAuth({
+      config: [
+        slack({
+          clientId: process.env.SLACK_CLIENT_ID,
+          clientSecret: process.env.SLACK_CLIENT_SECRET,
+        }),
+      ],
+    }),
+  ],
+});
+```
+
+The same pattern works for Auth0, Keycloak, Okta, and Microsoft Entra ID. Each helper pre-fills the discovery URL and default scopes for its provider.

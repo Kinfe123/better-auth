@@ -1,0 +1,36 @@
+---
+title: "Dropbox"
+description: "Dropbox provider setup and usage."
+order: 5
+---
+
+# Dropbox
+
+This page explains how to configure Dropbox OAuth in Better Auth.
+
+## Get your credentials
+
+Create an app in the [Dropbox Developer Portal](https://www.dropbox.com/developers). You can enable **Implicit Grant & PKCE** in the App Console. Set the redirect URL to `http://localhost:3000/api/auth/callback/dropbox` for local development.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    dropbox: {
+      clientId: process.env.DROPBOX_CLIENT_ID as string,
+      clientSecret: process.env.DROPBOX_CLIENT_SECRET as string,
+    },
+  },
+});
+```
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "dropbox" });
+```
+
+For a deeper dive into how Dropbox OAuth works, see the [Dropbox OAuth guide](https://developers.dropbox.com/oauth-guide).

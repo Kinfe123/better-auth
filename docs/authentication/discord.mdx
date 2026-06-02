@@ -1,0 +1,52 @@
+---
+title: "Discord"
+description: "Discord provider setup and usage."
+order: 4
+---
+
+# Discord
+
+This page explains how to add Discord OAuth to Better Auth.
+
+## Get your credentials
+
+Create an application in the [Discord Developer Portal](https://discord.com/developers/applications) and copy the **Client ID** and **Client Secret** from the OAuth2 tab. Add `http://localhost:3000/api/auth/callback/discord` as a redirect URL for local development.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    discord: {
+      clientId: process.env.DISCORD_CLIENT_ID as string,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+    },
+  },
+});
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client";
+
+const authClient = createAuthClient();
+
+await authClient.signIn.social({ provider: "discord" });
+```
+
+## Bot permissions
+
+If you're using the `bot` scope, you can pass a bitwise `permissions` value:
+
+```ts
+discord: {
+  clientId: process.env.DISCORD_CLIENT_ID as string,
+  clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+  permissions: 2048 | 16384, // Send Messages + Embed Links
+},
+```
+
+The `permissions` parameter only takes effect when the `bot` scope is included in your OAuth configuration.

@@ -1,0 +1,51 @@
+---
+title: "LINE"
+description: "LINE provider setup and usage."
+order: 14
+---
+
+# LINE
+
+This page explains how to configure LINE OAuth in Better Auth.
+
+## Get your credentials
+
+1. Create a channel in the [LINE Developers Console](https://developers.line.biz/console/).
+2. Note your **Channel ID** (client ID) and **Channel secret**.
+3. Add your redirect URI in the channel settings: `http://localhost:3000/api/auth/callback/line` for development.
+4. Enable the required scopes — at minimum `openid`; add `profile` and `email` if you need name, avatar, and email.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    line: {
+      clientId: process.env.LINE_CLIENT_ID as string,
+      clientSecret: process.env.LINE_CLIENT_SECRET as string,
+    },
+  },
+});
+```
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "line" });
+```
+
+## Sign in with a LINE ID token
+
+If you obtain the LINE ID token on the client, you can skip the redirect:
+
+```ts
+await authClient.signIn.social({
+  provider: "line",
+  idToken: {
+    token: lineIdToken,
+    accessToken: lineAccessToken,
+  },
+});
+```

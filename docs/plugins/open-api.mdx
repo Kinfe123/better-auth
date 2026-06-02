@@ -1,0 +1,43 @@
+---
+title: "Open API"
+description: "Add an interactive OpenAPI reference to your Better Auth instance."
+order: 1
+---
+
+# Open API
+
+The Open API plugin generates an [OpenAPI 3.0](https://swagger.io/specification/) schema for all endpoints in your Better Auth instance — core routes and any plugin routes — and serves an interactive UI at `/api/auth/reference` powered by [Scalar](https://scalar.com/).
+
+> **Note:** This plugin is still early-stage. The schema coverage is expanding with each release.
+
+## Add the plugin
+
+```ts
+import { betterAuth } from "better-auth";
+import { openAPI } from "better-auth/plugins";
+
+export const auth = betterAuth({
+  plugins: [
+    openAPI(),
+  ],
+});
+```
+
+Once mounted, navigate to `/api/auth/reference` in your browser to see the interactive reference. Endpoints are grouped by plugin name. Core endpoints appear under **Default** and model schemas under **Models**.
+
+## Get the schema programmatically
+
+You can retrieve the generated OpenAPI schema as a JSON object at runtime:
+
+```ts
+import { auth } from "@/lib/auth";
+
+const openAPISchema = await auth.api.generateOpenAPISchema();
+console.log(openAPISchema);
+```
+
+This is useful for feeding the schema into code-generation tools or external documentation platforms.
+
+## Using Scalar with multiple sources
+
+If you already use Scalar for other API documentation, you can point it at the Better Auth schema endpoint alongside your other sources. The schema is served at `/api/auth/reference.json` and follows the standard OpenAPI 3.0 format, so any OpenAPI-compatible tooling can consume it.

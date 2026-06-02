@@ -1,0 +1,43 @@
+---
+title: "Cognito"
+description: "Amazon Cognito provider setup and usage."
+order: 3
+---
+
+# Cognito
+
+This page explains how to connect Better Auth to Amazon Cognito so your users can sign in through a Cognito-hosted UI.
+
+## Get your credentials
+
+Set up a **User Pool** and an **App client** in the [Amazon Cognito Console](https://console.aws.amazon.com/cognito/):
+
+1. Create a User Pool.
+2. Under **App clients**, create a new App client and note the **Client ID** and **Client Secret**.
+3. Go to **Domain** and configure a Cognito Hosted UI domain (for example, `your-app.auth.us-east-1.amazoncognito.com`).
+4. In **App client settings**, enable the **Authorization code grant** flow and the `openid`, `profile`, and `email` scopes.
+5. Add your callback URL: `http://localhost:3000/api/auth/callback/cognito` for development.
+
+> **Note:** A User Pool is required. The callback URL must match exactly what you configure in the Cognito App client settings.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth";
+
+export const auth = betterAuth({
+  socialProviders: {
+    cognito: {
+      clientId: process.env.COGNITO_CLIENT_ID as string,
+      clientSecret: process.env.COGNITO_CLIENT_SECRET as string,
+      issuer: "replace-me" as string, // e.g. https://cognito-idp.us-east-1.amazonaws.com/us-east-1_XXXXXX
+    },
+  },
+});
+```
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "cognito" });
+```
