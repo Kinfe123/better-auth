@@ -1,0 +1,37 @@
+---
+title: "Kick"
+description: "Kick provider setup and usage."
+order: 13
+---
+
+# Kick
+
+This guide shows you how to add Kick OAuth sign-in to your Better Auth instance.
+
+## Get your credentials
+
+1. Open the [Kick Developer Portal](https://kick.com/settings/developer) and create an application.
+2. Set the redirect URL to `http://localhost:3000/api/auth/callback/kick` for local development.
+3. Copy your **Client ID** and **Client Secret**.
+
+## Configure the provider
+
+```ts
+// lib/auth.ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    kick: {
+      clientId: process.env.KICK_CLIENT_ID as string,
+      clientSecret: process.env.KICK_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+await authClient.signIn.social({ provider: "kick" })
+```
