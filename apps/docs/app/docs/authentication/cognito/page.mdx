@@ -1,0 +1,45 @@
+---
+title: "Cognito"
+description: "Amazon Cognito provider setup and usage."
+order: 3
+---
+
+# Cognito
+
+The Cognito provider integrates your app with an Amazon Cognito User Pool using the Hosted UI and the authorization code grant flow.
+
+## Get your credentials
+
+1. Go to the [Amazon Cognito Console](https://console.aws.amazon.com/cognito/) and create a **User Pool**.
+2. Under **App clients**, create a new app client and note the **Client ID** and **Client Secret**.
+3. Under **Domain**, set a Cognito Hosted UI domain, for example: `your-app.auth.us-east-1.amazoncognito.com`.
+4. In **App client settings**, enable:
+   - Allowed OAuth flows: `Authorization code grant`
+   - Allowed OAuth scopes: `openid`, `profile`, `email`
+5. Add your callback URL: `http://localhost:3000/api/auth/callback/cognito`.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    cognito: {
+      clientId: process.env.COGNITO_CLIENT_ID as string,
+      clientSecret: process.env.COGNITO_CLIENT_SECRET as string,
+      issuer: "replace-me" as string, // e.g. https://cognito-idp.us-east-1.amazonaws.com/us-east-1_XXXXXX
+    },
+  },
+})
+```
+
+`issuer` must be the User Pool's OIDC issuer URL. Better Auth uses it to discover the token and userinfo endpoints automatically.
+
+## Sign in
+
+```ts
+import { authClient } from "@/lib/auth-client"
+
+await authClient.signIn.social({ provider: "cognito" })
+```

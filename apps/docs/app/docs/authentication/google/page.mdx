@@ -1,0 +1,51 @@
+---
+title: "Google"
+description: "Google provider setup and usage."
+order: 10
+---
+
+# Google
+
+The Google provider lets your users sign in with their Google account. It supports the standard OAuth redirect flow as well as direct sign-in with a Google ID token — useful when you already have a token from Google's SDK on the client.
+
+## Get your credentials
+
+1. Open the [Google Cloud Console](https://console.cloud.google.com/apis/dashboard) and create or select a project.
+2. Go to **APIs & Services > Credentials** and click **Create Credentials > OAuth client ID**.
+3. Select **Web application** and add your authorized redirect URI:
+   - Local: `http://localhost:3000/api/auth/callback/google`
+   - Production: `https://your-domain.com/api/auth/callback/google`
+4. Copy the **Client ID** and **Client Secret**.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+Better Auth uses `BETTER_AUTH_URL` to construct the redirect URI sent to Google. Without it, the callback URL may default to `localhost` and fail in production.
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+const authClient = createAuthClient()
+
+// Standard redirect
+await authClient.signIn.social({ provider: "google" })
+
+// With ID token (no redirect — signs in directly)
+await authClient.signIn.social({
+  provider: "google",
+  idToken: { token: googleIdToken },
+})
+```

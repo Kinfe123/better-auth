@@ -1,0 +1,40 @@
+---
+title: "Kakao"
+description: "Kakao provider setup and usage."
+order: 12
+---
+
+# Kakao
+
+The Kakao provider lets your users sign in with their Kakao account using OAuth 2.0.
+
+## Get your credentials
+
+1. Go to the [Kakao Developer Portal](https://developers.kakao.com) and create a new application.
+2. Under **Kakao Login**, enable the login feature and configure the redirect URI: `http://localhost:3000/api/auth/callback/kakao`.
+3. Copy the **REST API key** (client ID) from the app's summary page.
+
+Default scopes are `account_email`, `profile_image`, and `profile_nickname`. Note that `account_email` requires your app to be a verified **Biz App** in Kakao.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    kakao: {
+      clientId: process.env.KAKAO_CLIENT_ID as string,
+      clientSecret: process.env.KAKAO_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { authClient } from "@/lib/auth-client"
+
+await authClient.signIn.social({ provider: "kakao" })
+```

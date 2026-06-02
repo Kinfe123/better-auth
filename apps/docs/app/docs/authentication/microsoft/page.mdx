@@ -1,0 +1,46 @@
+---
+title: "Microsoft"
+description: "Microsoft provider setup and usage."
+order: 16
+---
+
+# Microsoft
+
+The Microsoft provider integrates with Azure Entra ID (formerly Active Directory), letting your users sign in with their Microsoft account.
+
+## Get your credentials
+
+1. Go to the [Microsoft Entra ID dashboard](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app) and register a new application.
+2. Under **Authentication**, add a redirect URI: `http://localhost:3000/api/auth/callback/microsoft`.
+3. Under **Certificates & secrets**, create a new client secret and copy its value.
+4. Copy the **Application (client) ID** from the app's overview page.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    microsoft: {
+      clientId: process.env.MS_APP_ID as string,
+      clientSecret: process.env.MS_CLIENT_SECRET as string,
+      tenantId: process.env.MS_TENANT_ID, // Optional: restrict to a specific tenant
+    },
+  },
+})
+```
+
+Leave `tenantId` unset (or set it to `common`) to allow sign-in from any Microsoft account. Set it to your organization's tenant ID to restrict sign-in to that tenant.
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+const authClient = createAuthClient()
+
+await authClient.signIn.social({
+  provider: "microsoft",
+  callbackURL: "/dashboard",
+})
+```

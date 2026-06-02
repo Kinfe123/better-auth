@@ -1,0 +1,75 @@
+---
+title: "Apple"
+description: "Apple provider setup and usage."
+order: 1
+---
+
+# Apple
+
+Signing in with Apple requires an active Apple Developer account. The setup is more involved than most OAuth providers because Apple requires a JWT-based client secret  a `.p8` private key rather than a static secret.
+
+> **Note:** Apple Sign In does **not** support `localhost` or non-HTTPS URLs. You must use a domain with a valid HTTPS/TLS certificate — even during development.
+
+## Get your credentials
+
+1. In the [Apple Developer Portal](https://developer.apple.com/account/resources/authkeys/list), go to **Certificates, Identifiers & Profiles**.
+2. Create an **App ID** with the Sign In with Apple capability enabled.
+3. Create a **Service ID** and configure it with your domain and a return URL: `https://yourdomain.com/api/auth/callback/apple`.
+4. Create a **Key** with Sign In with Apple enabled. Download the `.p8` file — it can only be downloaded once. Note the Key ID and your Team ID.
+
+Your `clientId` is the Service ID identifier. Your client secret must be generated as a signed JWT using the `.p8` key.
+
+## Generate the client secret
+
+```ts
+import { importPKCS8, SignJWT } from "jose"
+
+async function generateAppleClientSecret(
+  clientId: string,
+  teamId: string,
+  keyId: string,
+  privateKey: string,
+) {
+  const key = await importPKCS8(privateKey, "ES256")
+  const now = Math.floor(Date.now() / 1000)
+  return new SignJWT({})
+    .setProtectedHeader({ alg: "ES256", kid: keyId })
+    .setIssuer(teamId)
+    .setSubject(clientId)
+    .setAudience("https://appleid.apple.com")
+    .setIssuedAt(now)
+    .setExpirationTime(now + 180 * 24 * 60 * 60)
+    .sign(key)
+}
+```
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  trustedOrigins: ["https://appleid.apple.com"],
+  socialProviders: {
+    apple: {
+      clientId: process.env.APPLE_CLIENT_ID as string,
+      clientSecret: await generateAppleClientSecret(
+        process.env.APPLE_CLIENT_ID!,
+        process.env.APPLE_TEAM_ID!,
+        process.env.APPLE_KEY_ID!,
+        process.env.APPLE_PRIVATE_KEY!,
+      ),
+    },
+  },
+})
+```
+
+You must add `https://appleid.apple.com` to `trustedOrigins` so the server accepts Apple's POST-back during the OAuth flow.
+
+## Sign in
+
+```ts
+import { authClient } from "@/lib/auth-client"
+
+await authClient.signIn.social({ provider: "apple" })
+```

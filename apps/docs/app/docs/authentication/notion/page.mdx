@@ -1,0 +1,43 @@
+---
+title: "Notion"
+description: "Notion provider setup and usage."
+order: 18
+---
+
+# Notion
+
+The Notion provider lets your users sign in with their Notion account using OAuth 2.0. You'll need to create a public Notion integration to allow users from any workspace to authenticate.
+
+## Get your credentials
+
+1. Go to the [Notion Developers Portal](https://www.notion.so/my-integrations) and create a new integration.
+2. Set the integration type to **Public**.
+3. Under **OAuth Domain & URIs**, set the redirect URL to `http://localhost:3000/api/auth/callback/notion` for local development.
+4. Enable the **Read user information including email addresses** capability.
+5. Copy the **OAuth client ID** and **OAuth client secret**.
+
+> **Note:** For user authentication, you need a **public** integration. Internal integrations are limited to a single workspace and won't work for general sign-in flows.
+
+## Configure the provider
+
+```ts
+import { betterAuth } from "better-auth"
+
+export const auth = betterAuth({
+  socialProviders: {
+    notion: {
+      clientId: process.env.NOTION_CLIENT_ID as string,
+      clientSecret: process.env.NOTION_CLIENT_SECRET as string,
+    },
+  },
+})
+```
+
+## Sign in
+
+```ts
+import { createAuthClient } from "better-auth/client"
+const authClient = createAuthClient()
+
+await authClient.signIn.social({ provider: "notion" })
+```
