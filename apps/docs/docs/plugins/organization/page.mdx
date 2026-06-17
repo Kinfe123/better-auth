@@ -1,0 +1,96 @@
+---
+title: "Organization"
+description: "The organization plugin allows you to manage your organization's members and teams."
+order: 870
+---
+
+# Organization
+
+Organization is a repository module detected from 17 source files and package export metadata.
+## What This Module Owns
+Organization owns a coherent part of the codebase. This page is generated from module structure, public symbols, routes, and package exports so larger repositories produce deeper docs instead of a fixed sidebar.
+The module key is `plugins/organization`. It was selected because the repository has concrete source evidence for this area, such as files, declarations, routes, or package exports.
+## Module Responsibilities
+- adminAc
+- defaultAc
+- defaultRoles
+- defaultStatements
+- memberAc
+- Organization
+- ownerAc
+- Plugins
+## Detailed Module Model
+Organization is generated from a coherent source area, not from a generic keyword. The docs engine groups files into this page when they share a module boundary, package export, route family, or public symbol surface.
+
+For Better Auth, module pages help the docs grow with the repository. Small codebases may only need a few module pages; larger codebases can expose many focused pages so readers can learn one capability, adapter, plugin, or subsystem at a time.
+
+## What to Look For
+- The responsibility owned by this module.
+- The public exports, route handlers, declarations, or configuration values attached to the module.
+- The neighboring docs pages that explain related user-facing workflows or integration details.
+
+## Success Criteria
+- Readers understand why this source area exists before reading file paths.
+- Readers can find the files that define the module without searching the whole repo.
+- Maintainers can update this page when the module's exports, routes, or responsibilities change.
+## Public or Observable Surface
+The items below are extracted from the files attached to this page. Treat them as evidence for what the module exposes or handles, not as a guarantee that every symbol is public API.
+- `adminAc`
+- `cacheAllRoles`
+- `clientSideHasPermission`
+- `defaultAc`
+- `DefaultOrganizationPlugin`
+- `defaultRoles`
+- `defaultRolesSchema`
+- `defaultStatements`
+- `DynamicAccessControlEndpoints`
+- `getOrgAdapter`
+- `hasPermission`
+- `HasPermissionBaseInput`
+## Operational Notes
+- The concept comes before the file paths, so readers understand the workflow before they inspect implementation evidence.
+- Examples stay grounded in detected commands, config names, import paths, or behavior from the repository.
+- Maintainer details live in the reference section so the main page stays useful to product readers.
+- Module pages are generated only from concrete source, route, declaration, or package export evidence.
+- If the module is internal, keep the page focused on responsibility and maintenance boundaries rather than promising public APIs.
+## Maintainer Reference
+The sections above are the reader-facing explanation. The references below are for maintainers who need to verify or update the implementation behind this page.
+
+### Implementation Map
+- `packages/better-auth/src/plugins/organization/access/index.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/access/statement.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/adapter.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/call.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/client.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/error-codes.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/has-permission.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/index.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/organization.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/organization/permission.ts` - Evidence file that contributes to the implementation understanding for this page.
+
+### Knowledge Chunks
+No semantic knowledge chunks were generated directly for these evidence files.
+
+### Source Details
+- `packages/better-auth/src/plugins/organization/access/index.ts`: language TypeScript; exports `adminAc`, `defaultAc`, `defaultRoles`, `defaultStatements`, `memberAc`, `ownerAc`
+- `packages/better-auth/src/plugins/organization/access/statement.ts`: language TypeScript; exports `adminAc`, `defaultAc`, `defaultRoles`, `defaultStatements`, `memberAc`, `ownerAc`
+- `packages/better-auth/src/plugins/organization/adapter.ts`: language TypeScript; exports `getOrgAdapter`
+- `packages/better-auth/src/plugins/organization/call.ts`: language TypeScript; exports `orgMiddleware`, `orgSessionMiddleware`
+- `packages/better-auth/src/plugins/organization/client.ts`: language TypeScript; exports `clientSideHasPermission`, `defaultRolesSchema`, `InferInvitation`, `InferMember`, `inferOrgAdditionalFields`, `InferOrganization`
+- `packages/better-auth/src/plugins/organization/error-codes.ts`: language TypeScript; exports `ORGANIZATION_ERROR_CODES`
+- `packages/better-auth/src/plugins/organization/has-permission.ts`: language TypeScript; exports `hasPermission`
+- `packages/better-auth/src/plugins/organization/index.ts`: language TypeScript; exports `DefaultOrganizationPlugin`, `defaultRolesSchema`, `DynamicAccessControlEndpoints`, `getOrgAdapter`, `hasPermission`, `InferInvitation`
+
+### Evidence
+- `package.json:exports:./plugins/organization`
+- `package.json:exports:./plugins/organization/access`
+- `packages/better-auth/src/plugins/organization/access/index.ts`
+- `packages/better-auth/src/plugins/organization/access/statement.ts`
+- `packages/better-auth/src/plugins/organization/adapter.ts`
+- `packages/better-auth/src/plugins/organization/call.ts`
+- `packages/better-auth/src/plugins/organization/client.ts`
+- `packages/better-auth/src/plugins/organization/error-codes.ts`
+- `packages/better-auth/src/plugins/organization/has-permission.ts`
+- `packages/better-auth/src/plugins/organization/index.ts`
+- `packages/better-auth/src/plugins/organization/organization.ts`
+- `packages/better-auth/src/plugins/organization/permission.ts`

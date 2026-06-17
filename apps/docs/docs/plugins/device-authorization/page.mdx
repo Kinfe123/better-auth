@@ -1,0 +1,84 @@
+---
+title: "Device Authorization"
+description: "OAuth 2.0 Device Authorization Grant for limited-input devices"
+order: 680
+---
+
+# Device Authorization
+
+Device Authorization is a repository module detected from 5 source files and package export metadata.
+## What This Module Owns
+Device Authorization owns a coherent part of the codebase. This page is generated from module structure, public symbols, routes, and package exports so larger repositories produce deeper docs instead of a fixed sidebar.
+The module key is `plugins/device-authorization`. It was selected because the repository has concrete source evidence for this area, such as files, declarations, routes, or package exports.
+## Module Responsibilities
+- Device Authorization
+- DEVICE_AUTHORIZATION_ERROR_CODES
+- deviceAuthorization
+- deviceAuthorizationClient
+- DeviceAuthorizationOptions
+- deviceAuthorizationOptionsSchema
+- ms
+- Plugins
+- sec
+- TimeString
+## Detailed Module Model
+Device Authorization is generated from a coherent source area, not from a generic keyword. The docs engine groups files into this page when they share a module boundary, package export, route family, or public symbol surface.
+
+For Better Auth, module pages help the docs grow with the repository. Small codebases may only need a few module pages; larger codebases can expose many focused pages so readers can learn one capability, adapter, plugin, or subsystem at a time.
+
+## What to Look For
+- The responsibility owned by this module.
+- The public exports, route handlers, declarations, or configuration values attached to the module.
+- The neighboring docs pages that explain related user-facing workflows or integration details.
+
+## Success Criteria
+- Readers understand why this source area exists before reading file paths.
+- Readers can find the files that define the module without searching the whole repo.
+- Maintainers can update this page when the module's exports, routes, or responsibilities change.
+## Public or Observable Surface
+The items below are extracted from the files attached to this page. Treat them as evidence for what the module exposes or handles, not as a guarantee that every symbol is public API.
+- `DEVICE_AUTHORIZATION_ERROR_CODES`
+- `deviceApprove`
+- `deviceAuthorization`
+- `deviceAuthorizationClient`
+- `DeviceAuthorizationOptions`
+- `deviceAuthorizationOptionsSchema`
+- `deviceCode`
+- `DeviceCode`
+- `deviceDeny`
+- `deviceToken`
+- `deviceVerify`
+- `ms`
+## Operational Notes
+- The concept comes before the file paths, so readers understand the workflow before they inspect implementation evidence.
+- Examples stay grounded in detected commands, config names, import paths, or behavior from the repository.
+- Maintainer details live in the reference section so the main page stays useful to product readers.
+- Module pages are generated only from concrete source, route, declaration, or package export evidence.
+- If the module is internal, keep the page focused on responsibility and maintenance boundaries rather than promising public APIs.
+## Maintainer Reference
+The sections above are the reader-facing explanation. The references below are for maintainers who need to verify or update the implementation behind this page.
+
+### Implementation Map
+- `packages/better-auth/src/plugins/device-authorization/client.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/device-authorization/error-codes.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/device-authorization/index.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/device-authorization/routes.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/better-auth/src/plugins/device-authorization/schema.ts` - Evidence file that contributes to the implementation understanding for this page.
+
+### Knowledge Chunks
+No semantic knowledge chunks were generated directly for these evidence files.
+
+### Source Details
+- `packages/better-auth/src/plugins/device-authorization/client.ts`: language TypeScript; exports `deviceAuthorizationClient`
+- `packages/better-auth/src/plugins/device-authorization/error-codes.ts`: language TypeScript; exports `DEVICE_AUTHORIZATION_ERROR_CODES`
+- `packages/better-auth/src/plugins/device-authorization/index.ts`: language TypeScript; exports `deviceAuthorization`, `DeviceAuthorizationOptions`, `deviceAuthorizationOptionsSchema`, `ms`, `sec`, `TimeString`
+- `packages/better-auth/src/plugins/device-authorization/routes.ts`: language TypeScript; exports `deviceApprove`, `deviceCode`, `deviceDeny`, `deviceToken`, `deviceVerify`
+- `packages/better-auth/src/plugins/device-authorization/schema.ts`: language TypeScript; exports `DeviceCode`, `schema`
+
+### Evidence
+- `package.json:exports:./plugins/device-authorization`
+- `packages/better-auth/src/plugins/device-authorization/client.ts`
+- `packages/better-auth/src/plugins/device-authorization/error-codes.ts`
+- `packages/better-auth/src/plugins/device-authorization/index.ts`
+- `packages/better-auth/src/plugins/device-authorization/routes.ts`
+- `packages/better-auth/src/plugins/device-authorization/schema.ts`
