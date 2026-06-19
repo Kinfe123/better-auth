@@ -1,0 +1,82 @@
+---
+title: "Self-Hosting Overview"
+description: "The repository includes guidance or runtime files for deploying the product yourself."
+---
+
+# Self-Hosting Overview
+
+The repository includes guidance or runtime files for deploying the product yourself.
+## What This Is
+Self-hosting explains how the package runs inside or next to a user's own application. It clarifies which pieces are required at runtime, how the host app mounts the product, and what infrastructure must be available in production.
+## Why It Matters
+Self-Hosting Overview matters because it is part of how Root turns repository behavior into a usable developer or operator workflow. This page gives readers the mental model first, then uses implementation evidence as supporting context.
+## Core Concepts
+- runtime dependency
+- host application
+- deployment
+- container
+- production route
+## Typical Workflow
+1. Install the package as a runtime dependency when the host app serves it in production.
+2. Mount the framework adapter or standalone server at the configured base path.
+3. Verify that environment variables, database access, auth config, and allowed origins match production.
+## Detailed Architecture
+Self-Hosting Overview is about the boundary between the user's application and Root. The host application owns the production environment, routing, authentication configuration, database access, secrets, and deployment platform. Root supplies the package entrypoint, adapter, handler, or standalone runtime that plugs into that host.
+
+The practical goal is to make that boundary obvious. Developers need to know what they install, where they mount it, what configuration they pass in, and what infrastructure must already exist. They also need to understand the difference between local CLI usage and production self-hosted usage when the package is required at runtime.
+
+## Operational Considerations
+- Runtime dependencies must be installed in the environment that serves the admin surface.
+- Auth, database, and access-control configuration come from the same source of truth as the host app.
+- Preview, staging, and production each verify trusted origins, secrets, route paths, and database migrations.
+
+## Success Criteria
+- A reader knows what belongs to the host app and what belongs to the package.
+- A reader can identify the route or server integration point before editing files.
+- A reader knows which configuration must be production-ready before exposing the admin surface.
+## Runtime Shape
+This page covers the self-hosted runtime path detected from deployment files, README sections, or configuration files.
+## Integration Story
+The important idea is that Root can run in a production environment controlled by the user. This page makes clear which files belong to the package and which runtime settings belong to the host application.
+## Setup Checklist
+1. Install dependencies with `pnpm install`.
+2. Configure required environment variables before starting the runtime.
+3. Run `pnpm dev` or the framework-specific command from the host app.
+4. Verify the mounted route, API handler, or container can reach the same auth/database configuration as the host app.
+## Configuration Files
+- `docker-compose.yml` (deployment) - Container or Docker Compose setup.
+- `e2e/smoke/test/fixtures/cloudflare/wrangler.json` (deployment) - Deployment platform configuration.
+- `packages/core/src/social-providers/railway.ts` (deployment) - Deployment platform configuration.
+- `packages/core/src/social-providers/vercel.ts` (deployment) - Deployment platform configuration.
+## Environment Variables
+- `APPDATA`
+- `AUTH_SECRET`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_TELEMETRY_ENDPOINT`
+- `DATABASE_URL`
+- `NODE_ENV`
+- `npm_config_user_agent`
+## Operational Notes
+- The concept comes before the file paths, so readers understand the workflow before they inspect implementation evidence.
+- Examples stay grounded in detected commands, config names, import paths, or behavior from the repository.
+- Maintainer details live in the reference section so the main page stays useful to product readers.
+- Local development, standalone runtime, and production embedded usage are treated as separate operating modes.
+- Host-app responsibilities include auth config, database access, secrets, trusted origins, and route mounting.
+## Maintainer Reference
+The sections above are the reader-facing explanation. The references below are for maintainers who need to verify or update the implementation behind this page.
+
+### Implementation Map
+- `docker-compose.yml` - Deployment configuration that explains how the product runs outside local development.
+- `e2e/smoke/test/fixtures/cloudflare/wrangler.json` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/core/src/social-providers/railway.ts` - Evidence file that contributes to the implementation understanding for this page.
+- `packages/core/src/social-providers/vercel.ts` - Deployment configuration that explains how the product runs outside local development.
+
+### Source Details
+- `packages/core/src/social-providers/railway.ts`: language TypeScript; exports `railway`, `RailwayOptions`, `RailwayProfile`
+- `packages/core/src/social-providers/vercel.ts`: language TypeScript; exports `vercel`, `VercelOptions`, `VercelProfile`
+
+### Evidence
+- `docker-compose.yml`
+- `e2e/smoke/test/fixtures/cloudflare/wrangler.json`
+- `packages/core/src/social-providers/railway.ts`
+- `packages/core/src/social-providers/vercel.ts`

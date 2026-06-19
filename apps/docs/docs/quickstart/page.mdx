@@ -1,0 +1,90 @@
+---
+title: "Quickstart"
+description: "Run Root with the current scripts and configuration."
+---
+
+# Quickstart
+
+Use this page as the shortest path from clone to a useful first run of Root. The goal is not to understand every file yet; the goal is to install dependencies, provide required configuration, and run the command that proves the project is alive.
+## What You Will Accomplish
+- Prepare the repository with the detected package manager.
+- Add the minimum environment configuration needed for runtime behavior.
+- Run the primary workflow so you can confirm the project is usable before exploring advanced docs.
+## Before You Start
+This repository appears to use `pnpm` as its package manager.
+Environment-backed behavior was detected, so configuration is part of the first-run path.
+## Recommended First Run
+1. Install dependencies with `pnpm install`.
+2. Copy `env.example` to `.env` and set the required values.
+3. Run `pnpm dev` to exercise the main workflow.
+## Useful Commands
+These commands are useful after the first run because they describe the repeatable workflows exposed by the repository.
+- `prepare`: `lefthook install --reset-hooks-path`
+- `build`: `turbo build --filter=./packages/*`
+- `dev`: `turbo dev --filter=./packages/* --filter=!./packages/cli`
+- `clean`: `turbo clean --filter=./packages/* && rm -rf node_modules`
+- `format`: `biome format . --write`
+- `format:md`: `pnpm --filter docs format:md`
+- `format:check`: `pnpm --filter docs format:check`
+- `lint`: `biome check . --error-on-warnings`
+- `lint:dependencies`: `knip && knip --production`
+- `lint:fix`: `biome check . --fix --unsafe`
+- `lint:spell`: `cspell . --color`
+- `lint:types`: `turbo lint:types --filter=./packages/*`
+- `lint:packages`: `turbo lint:package --filter=./packages/*`
+- `changeset`: `changeset`
+- `ci:version`: `changeset version && pnpm install --no-frozen-lockfile`
+- `ci:release`: `turbo clean --filter=./packages/* && turbo build --filter=./packages/* && changeset publish`
+- `test`: `turbo test --continue --filter=./packages/* --filter=./test/*`
+- `coverage`: `turbo coverage --filter=./packages/* --filter=./test/*`
+- `postcoverage`: `pnpm coverage:collect && pnpm coverage:merge && pnpm coverage:report`
+- `coverage:merge`: `nyc merge coverage/raw coverage/merged/merged-coverage.json`
+- `coverage:collect`: `rm -rf coverage && mkdir -p coverage/raw && for f in $(find packages test -name coverage-final.json); do pkg=$(basename "$(dirname "$(dirname "$f")")"); cp "$f" "./coverage/raw/$pkg-coverage-final.json"; done`
+- `coverage:report`: `nyc --temp-dir=./coverage/raw report --reporter=lcov --reporter text-summary`
+- `coverage:open`: `open coverage/lcov-report/index.html`
+- `e2e:smoke`: `turbo e2e:smoke`
+- `e2e:integration`: `turbo e2e:integration`
+- `typecheck`: `tsc --build`
+- `typecheck:dist`: `tsc --project tsconfig.dist-check.json`
+## Useful CLI Options
+- `--adapter`: flag is provided
+- `--args`: {"key":"value"}'`,
+- `--capabilities`
+- `--claude-code`: ) + chalk.gray("Add to Claude Code"),
+- `--config`: <config>",
+- `--copy`: flag to copy output to clipboard
+- `--cursor`: ) + chalk.gray("Add to Cursor
+- `--cwd`: <cwd>",
+- `--dev`: for dev dependencies",
+- `--dialect`: <dialect>",
+- `--force`: better-auth",
+- `--help`: to see all commands.\n",
+- `--json`: flag for JSON output
+- `--manual`: ) + chalk.gray("Manual configuration"),
+- `--open-code`: ) + chalk.gray("Add to Open Code
+- `--optional`: for optional dependencies",
+- `--output`: <output>", "the file to output to the generated schema
+- `--package-manager`: <package-manager>",
+- `--peer`: for peer dependencies",
+- `--provider`: <url> --capabilities <cap1> <cap2>",
+- `--registry-url`
+- `--save-catalog`: for catalog dependencies",
+- `--save-catalog-name`: ${name}
+- `--save-dev`: for dev dependencies",
+- `--save-optional`: for optional dependencies",
+- `--save-peer`
+- `--scope`: project",
+- `--skill`: ${skillName}
+- `--transport`: http better-auth ${REMOTE_MCP_URL}
+- `--version`
+- `--y`: is deprecated. Consider -y or --yes
+- `--yes`
+## Next Places to Read
+- Installation: `docs/installation/page.mdx`
+- Root: `docs/page.mdx`
+- Developer Tools: `docs/features/developer-tools/page.mdx`
+- Session Management: `docs/features/session-management/page.mdx`
+- User Management: `docs/features/user-management/page.mdx`
+- Self-Hosting Overview: `docs/self-hosting/overview/page.mdx`
+- Access Control: `docs/configuration/access-control/page.mdx`
+- Database Adapters: `docs/configuration/database-adapters/page.mdx`
